@@ -105,6 +105,8 @@ src/magento2/var/
 
 dist/
 
+.DS_Store
+
 # Logs
 logs
 *.log
