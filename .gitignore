@@ -1,3 +1,6 @@
+################################################################################
+# Github Magento Ignore
+################################################################################
 src/magento2/.htaccess.sample
 src/magento2/.modgit/
 src/magento2/.modman/
@@ -27,18 +30,18 @@ src/magento2/app/.htaccess
 src/magento2/app/bootstrap.php
 src/magento2/app/locale/en_US/
 src/magento2/app/Mage.php
-src/magento2//cron.php
+src/magento2/cron.php
 src/magento2/cron.sh
 src/magento2/dev/.htaccess
 src/magento2/dev/tests/functional/
 src/magento2/downloader/
 src/magento2/errors/
 src/magento2/favicon.ico
-src/magento2//get.php
+src/magento2/get.php
 src/magento2/includes/
-src/magento2//index.php
+src/magento2/index.php
 src/magento2/index.php.sample
-src/magento2//install.php
+src/magento2/install.php
 src/magento2/js/blank.html
 src/magento2/js/calendar/
 src/magento2/js/enterprise/
@@ -73,9 +76,9 @@ src/magento2/LICENSE_AFL.txt
 src/magento2/LICENSE.html
 src/magento2/LICENSE.txt
 src/magento2/LICENSE_EE*
-src/magento2//mage
+src/magento2/mage
 src/magento2/media/
-src/magento2//api.php
+src/magento2/api.php
 src/magento2/nbproject/
 src/magento2/pear
 src/magento2/pear/
@@ -103,9 +106,64 @@ src/magento2/skin/frontend/enterprise
 src/magento2/skin/install/
 src/magento2/var/
 
-dist/
 
-.DS_Store
+################################################################################
+# Magento default Ignore
+################################################################################
+src/magento2/.buildpath
+src/magento2/.cache
+src/magento2/.metadata
+src/magento2/.project
+src/magento2/.settings
+atlassian*
+src/magento2/nbproject
+src/magento2/sitemap
+src/magento2/sitemap.xml
+src/magento2/.idea
+src/magento2/.gitattributes
+src/magento2/app/config_sandbox
+src/magento2/app/etc/config.php
+src/magento2/app/etc/env.php
+src/magento2/app/code/Magento/TestModule*
+src/magento2/lib/internal/flex/uploader/.actionScriptProperties
+src/magento2/lib/internal/flex/uploader/.flexProperties
+src/magento2/lib/internal/flex/uploader/.project
+src/magento2/lib/internal/flex/uploader/.settings
+src/magento2/lib/internal/flex/varien/.actionScriptProperties
+src/magento2/lib/internal/flex/varien/.flexLibProperties
+src/magento2/lib/internal/flex/varien/.project
+src/magento2/lib/internal/flex/varien/.settings
+
+src/magento2/pub/media/*.*
+!src/magento2/pub/media/.htaccess
+src/magento2/pub/media/catalog/*
+!src/magento2/pub/media/catalog/.htaccess
+src/magento2/pub/media/customer/*
+!src/magento2/pub/media/customer/.htaccess
+src/magento2/pub/media/downloadable/*
+!src/magento2/pub/media/downloadable/.htaccess
+src/magento2/pub/media/import/*
+!src/magento2/pub/media/import/.htaccess
+src/magento2/pub/media/theme/*
+src/magento2/pub/media/theme_customization/*
+!src/magento2/pub/media/theme_customization/.htaccess
+src/magento2/pub/media/wysiwyg/*
+!src/magento2/pub/media/wysiwyg/.htaccess
+src/magento2/pub/media/tmp/*
+!src/magento2/pub/media/tmp/.htaccess
+src/magento2/pub/media/captcha/*
+src/magento2/pub/static/*
+!src/magento2/pub/static/.htaccess
+
+src/magento2/var/*
+!src/magento2/var/.htaccess
+src/magento2/vendor/*
+!src/magento2/vendor/.htaccess
+
+
+################################################################################
+# Node Ignore
+################################################################################
 
 # Logs
 logs
@@ -154,3 +212,13 @@ jspm_packages
 
 # Yarn Integrity file
 .yarn-integrity
+
+
+################################################################################
+# App Ignore
+################################################################################
+
+dist/
+.DS_Store
+
+!src/magento2/pub/media/wysiwyg/megamenu
