@@ -27,9 +27,6 @@
 		<css src="Ves_Megamenu::css/font-awesome.min.css" />
 		<css src="Ves_Megamenu::css/animate.min.css" />
 		<css src="Ves_Megamenu::css/styles.css" />
-
-		<css src="Ves_Megamenu::css/custom.css" media="screen and (min-width: 768px)" />
-		<css src="Ves_Megamenu::css/custom-mob.css" media="screen and (max-width: 767px)"/>
 	</head>
 	<body>
 		<referenceBlock name="store.menu">
