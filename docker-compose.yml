@@ -1,12 +1,10 @@
 web:
-  build: .
-  command: php -S 0.0.0.0:80 -t /var/www/html
+  image: asp_web:latest
   links:
     - db
+  command: /usr/sbin/apache2ctl -D FOREGROUND
   ports:
     - "80:80"
-  volumes:
-    - ./src/magento2:/var/www/html
 db:
   image: mysql:5.6.32
   ports:

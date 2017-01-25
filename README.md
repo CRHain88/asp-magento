@@ -17,7 +17,7 @@ php bin/magento setup:static-content:deploy
 
 To deploy just the ASP theme:
 ```bash
-php ./bin/magento setup:static-content:deploy -t=CRHain/ASP
+php ./bin/magento setup:static-content:deploy -t CRHain/asp
 ```
 
 ## Docker
@@ -50,7 +50,25 @@ docker-compose up
   Where:
   * `$CONTAINER_NAME` is the name of the container (such as `asp_db_1`)
   * `$DATABASE_NAME` is the name of the database (such as `magento_asp`); and
-  * `$SQL_BACKUP_PATH` is the directory where the `.sql` back of file was downloaded.
+  * `$SQL_BACKUP_PATH` is the directory where the `.sql` back up file was downloaded.
 
 ### Linked Docker containers
 To view the IP address of a linked container, look at the /etc/hosts file to see how docker has mapped the ports.
+
+### Deploy Docker Containers
+
+Commit Changes
+
+```bash
+docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
+```
+
+Save Image
+```bash
+docker save -o asp_web.tar asp_web
+```
+
+Load Image (on remote server)
+```bash
+docker load -i asp_web.tar
+```

@@ -1,0 +1,7 @@
+server:
+    build: ./dockerfiles/asp_server
+    image: asp_server:latest
+web:
+  build: .
+  volumes:
+    - ./src/magento2:/var/www/html
