@@ -20,11 +20,11 @@ VOLUME src/magento2/var/vew_preprocessed:/var/www/html/var/vew_preprocessed
 # RUN useradd --create-home --password=null magento_user
 
 # Set Permissions
-CMD ["cd /var/www/html/magento2 \
+CMD ["cd /var/www/html \
     && find var vendor pub/static pub/media app/etc -type f -exec chmod g+w {} \; \
     && find var vendor pub/static pub/media app/etc -type d -exec chmod g+w {} \; \
     && chmod u+x bin/magento"]
 
 # Switch User
 # USER magento_user
-# WORKDIR /var/www/html
+WORKDIR /var/www/html

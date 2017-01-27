@@ -10,19 +10,25 @@ RUN locale-gen en_US.UTF-8 \
     && export LC_ALL=en_US.UTF-8
 
 # Install Apache
-RUN apt-get update
-RUN apt-get install -y apache2
+RUN apt-get update \
+    && apt-get install -y apache2
 
 # Install PHP5.6
-RUN apt-get -y update \
+RUN apt-get update \
     && apt-get -y install software-properties-common python-software-properties \
-    && apt-get -y update
+    && apt-get update
 
 RUN locale-gen en_US.UTF-8 \
-    && add-apt-repository ppa:ondrej/php \
-    && apt-get -y update \
-    && apt-get -y install php5.6 php5.6-readline php5.6-mcrypt php5.6-mbstring php5.6-curl php5.6-cli php5.6-mysql php5.6-gd php5.6-intl php5.6-xsl php5.6-zip git-all \
-    && apt-get -y update
+    && add-apt-repository -y ppa:ondrej/php \
+    && apt-get update \
+    && apt-get -y install php5.6 \
+    && apt-get -y install php5.6-curl php5.6-gd php5.6-intl php5.6-mbstring php5.6-mcrypt php5.6-mysql php5.6-soap php5.6-xml php5.6-xsl php5.6-zip \
+    && apt-get -y install php5.6-readline php5.6-cli git-all \
+    && apt-get update
+
+# RUN add-apt-repository -y ppa:ondrej/php \
+#     && apt-get update \
+#     && apt-get -y install php7-json php7-iconv
 
 # add missing always_populate_raw_post_data = -1 to php.ini
 # Not needed when moving to PHP 7.

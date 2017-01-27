@@ -2,7 +2,6 @@ web:
   image: asp_web:latest
   links:
     - db
-  command: /usr/sbin/apache2ctl -D FOREGROUND
   ports:
     - "80:80"
 db:

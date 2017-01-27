@@ -1,0 +1,2 @@
+web:
+  command: bash -c "./bin/magento setup:store-config:set --base-url="http://advancedspecialty.crhain.com && ./bin/magento setup:store-config:set --base-url-secure="https://advancedspecialty.crhain.com && set -e && rm -f /var/run/apache2/apache2.pid && /usr/sbin/apache2ctl -D FOREGROUND"
