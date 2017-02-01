@@ -18,7 +18,8 @@
     "gulp-cli": "1.2.2"
   },
   "scripts": {
-    "start": "docker-compose -f docker-compose.yml -f docker-compose.local.yml up",
+    "start": "docker-compose -f ./asp-web/docker-compose.yml -f ./asp-web/docker-compose.local.yml up",
+    "build": "docker-compose -f ./asp-web/docker-compose.yml -f ./asp-web/docker-compose.local.yml up --build",
     "clean:containers": "docker rm -v $(docker ps -a -q -f status=exited)",
     "clean:images": "docker rmi $(docker images -f 'dangling=true' -q)",
     "clean:volumes": "docker volume rm $(docker volume ls -qf dangling=true)",
