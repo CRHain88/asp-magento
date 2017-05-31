@@ -15,4 +15,4 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: asp_magento
       MYSQL_PASSWORD: asp_magento
-      MYSQL_DATABASE: magento_asp
+      MYSQL_DATABASE: magento_asp_2
