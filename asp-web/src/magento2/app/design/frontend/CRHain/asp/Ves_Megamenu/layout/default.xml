@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+  <body>
+    <referenceContainer name="store.menu">
+      <block class="Ves\Megamenu\Block\Menu" name="catalog.topnav.menu" as="catalog.topnav.menu" template="Ves_Megamenu::topmenu.phtml" ttl="3600">
+        <arguments>
+          <argument name="alias" xsi:type="string">main-menu</argument>
+        </arguments> 
+      </block>
+    </referenceContainer>
+  </body>
+</page>

@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+  server:
+    build: ../asp-server/
+    image: asp_server:latest
+    container_name: asp_server_1
+  web:
+    build: .
+    container_name: asp_web_1
+    image: asp_web:latest
+    depends_on:
+        - server
+    volumes:
+      - ./src/magento2:/var/www/magento2
+      - ./src/entry-point.sh:/usr/local/bin/entry-point.sh
+    entrypoint: ["/usr/local/bin/entry-point.sh", "local"]

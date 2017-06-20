@@ -1,0 +1,13 @@
+.DS_Store
+
+src/magento2/var/backups/*
+src/magento2/var/cache/*
+src/magento2/var/composer_home/*
+src/magento2/var/generation/*
+src/magento2/var/log/*
+src/magento2/var/page_cache/*
+src/magento2/var/report/*
+src/magento2/var/tmp/*
+src/magento2/var/vew_preprocessed/*
+
+src/magento2/node_modules

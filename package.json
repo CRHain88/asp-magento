@@ -6,26 +6,23 @@
   "license": "(OSL-3.0 OR AFL-3.0)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/magento/magento2.git"
+    "url": "https://github.com/CRHain88/asp.git"
   },
-  "homepage": "http://magento.com/",
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-cli": "^1.2.2"
-  },
+  "homepage": "http://adancedspecialty.com/",
   "engines": {
-    "node": ">=0.10.0"
-  },
-  "bugs": {
-    "url": "https://github.com/magento/magento2/issues"
+    "node": "6.5.0"
   },
   "main": "index.js",
-  "dependencies": {
-    "gulp": "^3.9.1",
-    "gulp-cli": "^1.2.2"
+  "devDependencies": {
+    "gulp": "3.9.1",
+    "gulp-cli": "1.2.2"
   },
   "scripts": {
-    "start": "docker-compose up",
+    "start": "docker-compose -f ./asp-web/docker-compose.yml -f ./asp-web/docker-compose.local.yml up",
+    "build": "docker-compose -f ./asp-web/docker-compose.yml -f ./asp-web/docker-compose.local.yml up --build",
+    "clean:containers": "docker rm -v $(docker ps -a -q -f status=exited)",
+    "clean:images": "docker rmi $(docker images -f 'dangling=true' -q)",
+    "clean:volumes": "docker volume rm $(docker volume ls -qf dangling=true)",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

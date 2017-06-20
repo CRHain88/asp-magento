@@ -1,0 +1,5 @@
+version: '2'
+
+services:
+  web:
+    entrypoint: ["/usr/local/bin/entry-point.sh", "production"]
