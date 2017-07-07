@@ -1,0 +1,47 @@
+.product.attributes.description {
+    dl {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    dt,
+    dd {
+        display: block;
+        font-size: 12px;
+        line-height: 1;
+        margin: 0;
+        padding: 10px 0;
+
+        @media screen and (min-width: @screen__xs) {
+            padding: 10px 5px;
+        }
+    }
+
+    dt {
+        @media screen and (min-width: @screen__xs) {
+            padding-right: 20px;
+            width: calc(30% - 30px);
+        }
+
+        @media screen and (min-width: @screen__xs) {
+            width: calc(25% - 30px);
+        }
+    }
+
+    dd {
+        @media screen and (min-width: @screen__xs) {
+            width: calc(70% - 10px);
+        }
+
+        @media screen and (min-width: @screen__m) {
+            width: calc(75% - 10px);
+        }
+    }
+
+    dt:nth-of-type(even),
+    dd:nth-of-type(even) {
+        background: #fbfbfb;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+    }
+}
