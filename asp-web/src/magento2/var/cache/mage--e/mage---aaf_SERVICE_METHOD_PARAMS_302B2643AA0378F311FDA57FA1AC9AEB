@@ -1,0 +1,2 @@
+a:4:{s:4:"hash";s:0:"";s:5:"mtime";i:1489696494;s:6:"expire";i:9999999999;s:4:"tags";s:38:"aaf_REFLECTION,aaf_REFLECTION,aaf_MAGE";}
+a:1:{i:0;a:4:{s:4:"name";s:9:"attribute";s:4:"type";s:50:"Magento\Catalog\Api\Data\ProductAttributeInterface";s:23:"isDefaultValueAvailable";b:0;s:12:"defaultValue";N;}}

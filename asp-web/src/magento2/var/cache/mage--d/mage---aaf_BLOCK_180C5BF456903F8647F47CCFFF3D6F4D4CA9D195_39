@@ -1,0 +1,54 @@
+a:4:{s:4:"hash";s:0:"";s:5:"mtime";i:1489783421;s:6:"expire";i:1489787021;s:4:"tags";s:66:"aaf_BLOCK_HTML,aaf_CATALOG_PRODUCT_39,aaf_CATALOG_PRODUCT,aaf_MAGE";}
+
+            <div class="field configurable required">
+            <label class="label" for="attribute93">
+                <span>Color</span>
+            </label>
+            <div class="control">
+                <select name="super_attribute[93]"
+                        data-selector="super_attribute[93]"
+                        data-validate="{required:true}"
+                        id="attribute93"
+                        class="super-attribute-select">
+                    <option value="">Choose an Option...</option>
+                </select>
+            </div>
+        </div>
+            <div class="field configurable required">
+            <label class="label" for="attribute144">
+                <span>List Unit Code</span>
+            </label>
+            <div class="control">
+                <select name="super_attribute[144]"
+                        data-selector="super_attribute[144]"
+                        data-validate="{required:true}"
+                        id="attribute144"
+                        class="super-attribute-select">
+                    <option value="">Choose an Option...</option>
+                </select>
+            </div>
+        </div>
+            <div class="field configurable required">
+            <label class="label" for="attribute136">
+                <span>Size Group</span>
+            </label>
+            <div class="control">
+                <select name="super_attribute[136]"
+                        data-selector="super_attribute[136]"
+                        data-validate="{required:true}"
+                        id="attribute136"
+                        class="super-attribute-select">
+                    <option value="">Choose an Option...</option>
+                </select>
+            </div>
+        </div>
+        <script type="text/x-magento-init">
+        {
+            "#product_addtocart_form": {
+                "configurable": {
+                    "spConfig": {"attributes":{"93":{"id":"93","code":"color","label":"Color","options":[{"id":"3910","label":"Aged Bronze","products":["30","29","28","27"]},{"id":"3565","label":"Blue, Gray","products":["34","33","32","31"]},{"id":"3934","label":"Gray\/Black\/Steel","products":["38","37","36","35"]}],"position":"0"},"144":{"id":"144","code":"list_unit_code","label":"List Unit Code","options":[{"id":"2709","label":"DZ","products":["30","29","34","33","38","37"]},{"id":"2699","label":"EA","products":["28","27","32","31","36","35"]}],"position":"1"},"136":{"id":"136","code":"size_group","label":"Size Group","options":[{"id":"4107","label":"L\/X-Large","products":["30","28","34","32","38","36"]},{"id":"4072","label":"S\/M","products":["29","27","33","31","37","35"]}],"position":"2"}},"template":"$<%- data.price %>","optionPrices":{"30":{"oldPrice":{"amount":"150"},"basePrice":{"amount":"150"},"finalPrice":{"amount":"150"}},"29":{"oldPrice":{"amount":"100"},"basePrice":{"amount":"100"},"finalPrice":{"amount":"100"}},"28":{"oldPrice":{"amount":"15"},"basePrice":{"amount":"15"},"finalPrice":{"amount":"15"}},"27":{"oldPrice":{"amount":"10"},"basePrice":{"amount":"10"},"finalPrice":{"amount":"10"}},"34":{"oldPrice":{"amount":"150"},"basePrice":{"amount":"150"},"finalPrice":{"amount":"150"}},"33":{"oldPrice":{"amount":"100"},"basePrice":{"amount":"100"},"finalPrice":{"amount":"100"}},"32":{"oldPrice":{"amount":"15"},"basePrice":{"amount":"15"},"finalPrice":{"amount":"15"}},"31":{"oldPrice":{"amount":"10"},"basePrice":{"amount":"10"},"finalPrice":{"amount":"10"}},"38":{"oldPrice":{"amount":"150"},"basePrice":{"amount":"150"},"finalPrice":{"amount":"150"}},"37":{"oldPrice":{"amount":"100"},"basePrice":{"amount":"100"},"finalPrice":{"amount":"100"}},"36":{"oldPrice":{"amount":"15"},"basePrice":{"amount":"15"},"finalPrice":{"amount":"15"}},"35":{"oldPrice":{"amount":"10"},"basePrice":{"amount":"10"},"finalPrice":{"amount":"10"}}},"prices":{"oldPrice":{"amount":"10"},"basePrice":{"amount":"10"},"finalPrice":{"amount":"10"}},"productId":"39","chooseText":"Choose an Option...","images":[],"index":{"30":{"93":"3910","144":"2709","136":"4107"},"29":{"93":"3910","144":"2709","136":"4072"},"28":{"93":"3910","144":"2699","136":"4107"},"27":{"93":"3910","144":"2699","136":"4072"},"34":{"93":"3565","144":"2709","136":"4107"},"33":{"93":"3565","144":"2709","136":"4072"},"32":{"93":"3565","144":"2699","136":"4107"},"31":{"93":"3565","144":"2699","136":"4072"},"38":{"93":"3934","144":"2709","136":"4107"},"37":{"93":"3934","144":"2709","136":"4072"},"36":{"93":"3934","144":"2699","136":"4107"},"35":{"93":"3934","144":"2699","136":"4072"}}},
+                    "gallerySwitchStrategy": "replace"
+                }
+            }
+        }
+    </script>

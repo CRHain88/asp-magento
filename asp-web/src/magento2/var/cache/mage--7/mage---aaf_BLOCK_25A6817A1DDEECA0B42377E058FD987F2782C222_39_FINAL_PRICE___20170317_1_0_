@@ -1,0 +1,15 @@
+a:4:{s:4:"hash";s:0:"";s:5:"mtime";i:1489783421;s:6:"expire";i:1489787021;s:4:"tags";s:66:"aaf_BLOCK_HTML,aaf_CATALOG_PRODUCT_39,aaf_CATALOG_PRODUCT,aaf_MAGE";}
+<div class="price-box price-final_price" data-role="priceBox" data-product-id="39">
+    
+
+<span class="price-container price-final_price tax weee"
+         itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        <span  id="product-price-39"                data-price-amount="10"
+        data-price-type="finalPrice"
+        class="price-wrapper "
+         itemprop="price">
+        <span class="price">$10.00</span>    </span>
+                <meta itemprop="priceCurrency" content="USD" />
+    </span>
+
+</div>
