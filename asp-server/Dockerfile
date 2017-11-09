@@ -5,7 +5,10 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
 
 # Install PHP 5.6 to work with latest Magento.
 # Need to set the local to work with Ondrej's name, presumably.
-RUN locale-gen en_US.UTF-8 \
+RUN apt-get clean \
+    && apt-get update \
+    && apt-get install -y locales \
+    && locale-gen en_US.UTF-8 \
     && export LANG=en_US.UTF-8 \
     && export LC_ALL=en_US.UTF-8
 
@@ -18,8 +21,11 @@ RUN apt-get update \
     && apt-get -y install software-properties-common python-software-properties \
     && apt-get update
 
-RUN locale-gen en_US.UTF-8 \
-    && add-apt-repository -y ppa:ondrej/php \
+RUN apt-get clean \
+    && apt-get update \
+    && apt-get install -y locales \
+    && locale-gen en_US.UTF-8 \
+    && LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php \
     && apt-get update \
     && apt-get -y install php5.6 \
     && apt-get -y install php5.6-curl php5.6-gd php5.6-intl php5.6-mbstring php5.6-mcrypt php5.6-mysql php5.6-soap php5.6-xml php5.6-xsl php5.6-zip \
