@@ -29,9 +29,18 @@
     margin: 0 !important;
 }
 
+.ves-megamenu.menu-hover .subhover:hover div.dropdown-menu {
+    @media screen and (min-width: 768px) {
+        background: #fff;
+        padding: 0;
+    }
+}
+
 div.level1.nav-dropdown > .row {
     @media screen and (min-width: 768px) {
         float: left;
+        min-height: 40px;
+        width: 20%;
     }
 }
 
@@ -51,6 +60,12 @@ div.level1.nav-dropdown > .row .mega-col {
 }
 
 //////////////////////////////////////////////////////////////////////////////////     Anchors
+.nav-mobile .nav-item .level1 {
+    @media only screen and (max-width: 767px) {
+        padding: 0;
+    }
+}
+
 .ves-megamenu.nav-mobile a.nav-anchor {
     text-decoration: none;
     width: 100%;
@@ -83,6 +98,13 @@ div.level1.nav-dropdown > .row .mega-col {
 
 .ves-megamenu .mega-col-level-1 div.level1 > a.nav-anchor {
     line-height: 1 !important;
+
+    @media only screen and (max-width: 767px) {
+        display: flex;
+        align-items: center;
+        border-top: 1px solid #eee;
+        padding-left: 20px;
+    }
 }
 
 .ves-megamenu li.level1 > a.nav-anchor {

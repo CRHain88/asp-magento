@@ -104,6 +104,7 @@
         @media screen and (min-width: 768px) {
             display: flex;
             float: left;
+            width: 60%;
 
             &:hover {
                 text-decoration: none;
@@ -163,7 +164,6 @@
     flex-grow: 1;
     margin: 0;
     order: 2;
-    text-align: right;
 
     @media screen and (min-width: 768px) {
         flex-grow: 0;
@@ -182,8 +182,38 @@
         content: "";
     }
 
+    &.active .block-minicart {
+        margin: 0 -60px;
+        width: calc(~"100% + 120px");
+
+        @media screen and (min-width: 768px) {
+            margin: 4px 0 0;
+            width: 390px;
+        }
+
+        &:before {
+            right: 68px;
+
+            @media screen and (min-width: 768px) {
+                right: 26px;
+            }
+        }
+
+        &:after {
+            right: 67px;
+
+            @media screen and (min-width: 768px) {
+                right: 25px;
+            }
+        }
+    }
+
     .action.showcart {
         position: relative;
+
+        @media screen and (min-width: 768px) {
+            width: 40%;
+        }
 
         &:before,
         &.active:before {
@@ -351,6 +381,7 @@
 
     .header.content {
         display: flex;
+        justify-content: flex-start;
     }
 
     .block-search {
@@ -502,21 +533,3 @@
 // .nav-mobile .submenu .nav-item{
 //     width: auto !important;
 // }
-
-/* Menu css changes start */
-
-@media screen and (min-width: 768px) {
-    .level1.nav-dropdown{
-	     -moz-column-count: 4;
-	    -webkit-column-count: 4;
-	    column-count: 4
-    }
-    div.level1.nav-dropdown > .row {
-	  display: inline-block;
-	  float: none !important;
-	  vertical-align: top;
-	  width: 100%;
-	}
-}
-
-/* Menu css changes end */
