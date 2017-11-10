@@ -127,7 +127,7 @@ do this inside the Docker container.
 
     Where `$MAGENTO_VERSION` is the latest stable version (such as `2.1.5`)
 
-4. Run the update command, which will prompt for repo.magento.com credentials.  
+4. Run the update command, which will prompt for repo.magento.com credentials.
    *Note: both the username and password are 32-bit random strings. Find the
     appropriate credentials for your account online.*
     ```sh
@@ -197,12 +197,24 @@ $ docker load -i asp_web.tar
 
 
 ### CSS styles haven't loaded
+Make sure Magento is in developer mode
+
+```sh
+php bin/magento deploy:mode:set developer
+```
+
 In terminal, run the following command:
 
 ```sh
+$ php bin/magento cache:clean
 $ php ./bin/magento setup:static-content:deploy -t CRHain/asp
 ```
 
+When finished, set the deploy mode back to default
+
+```sh
+php bin/magento deploy:mode:set production
+```
 
 ### MySQL is throwing 'max_allowed_packet' error
 In the MySQL container, enter the MySQL CLI.
