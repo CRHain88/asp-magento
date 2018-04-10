@@ -15,8 +15,8 @@ fi
 
 # Set domain addresses
 cd /var/www/magento2;
-./bin/magento setup:store-config:set --base-url="http://advancedspecialty.crhain.com";
-./bin/magento setup:store-config:set --base-url-secure="https://advancedspecialty.crhain.com";
+./bin/magento setup:store-config:set --base-url="http://advancedspecialty.com";
+./bin/magento setup:store-config:set --base-url-secure="https://advancedspecialty.com";
 
 # Start Cron
 /etc/init.d/cron start
