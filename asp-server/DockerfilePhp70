@@ -1,0 +1,53 @@
+FROM ubuntu:latest
+MAINTAINER Christian Hain <christian@crhain.com>
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
+
+# Install PHP 7.0 to work with latest Magento.
+# Need to set the local to work with Ondrej's name, presumably.
+RUN apt-get clean \
+    && apt-get update \
+    && apt-get install python-software-properties software-properties-common \
+    && LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
+
+# Install Apache
+RUN apt-get update \
+    && apt-get install -y apache2
+
+# Install PHP7.0
+RUN apt-get update \
+    && apt-get -y install php7.0 php7.0-curl php7.0-fpm php7.0-gd php7.0-intl php7.0-mbstring php7.0-mcrypt php7.0-mysql php7.0-soap php7.0-xml php7.0-zip \
+    && apt-get -y install libapache2-mod-php7.0 \
+    && apt-get update
+
+# Install MySQL
+RUN apt-get update \
+    && apt-get -y install mysql-server \
+    && mysql_secure_installation
+
+# Install phpMyAdmin
+RUN apt-get update \
+    && apt-get -y install phpmyadmin
+
+# Install Composer
+RUN apt-get update \
+    && apt-get -y install composer
+
+# Install Magento
+RUN mkdir /var/www/html/magento \
+    && composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=2.2.3 /var/www/html/magento/
+
+# RUN apt-get update \
+#     && apt-get -y install php7-json php7-iconv
+
+# add missing always_populate_raw_post_data = -1 to php.ini
+# Not needed when moving to PHP 7.
+# http://devdocs.magento.com/guides/v2.0/install-gde/trouble/php/tshoot_php-set.html#trouble-php-always
+# RUN echo "always_populate_raw_post_data=-1" > /etc/php/5.6/cli/conf.d/20-always_populate_raw_post_data.ini
+# RUN echo "always_populate_raw_post_data=-1" > /etc/php/5.6/apache2/conf.d/20-always_populate_raw_post_data.ini
+
+RUN a2enmod rewrite
+
+#apt-cleanup
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
