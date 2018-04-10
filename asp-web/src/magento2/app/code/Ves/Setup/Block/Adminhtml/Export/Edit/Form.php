@@ -58,11 +58,23 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
     protected $_widgets;
 
     /**
+     * @var \Ves\Setup\Model\System\Config\Source\Export\Pagebuilder
+     */    
+    protected $_pagebuilder;
+
+    /**
+     * @var \Ves\Setup\Model\System\Config\Source\Export\Megamenus
+     */    
+    protected $_megamenu;
+
+    /**
      * @var \Ves\Setup\Model\System\Config\Source\Export\FileExtension
      */
     protected $_fileExtension;
 
-    /**
+    protected $_setupHelper;
+
+   /**
      * @param \Magento\Backend\Block\Template\Context                    $context       
      * @param \Magento\Framework\Registry                                $registry      
      * @param \Magento\Framework\Data\FormFactory                        $formFactory   
@@ -71,9 +83,12 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
      * @param \Ves\Setup\Model\System\Config\Source\Export\VesModules    $vesModules    
      * @param \Ves\Setup\Model\System\Config\Source\Export\Cmspage       $cmsPage       
      * @param \Ves\Setup\Model\System\Config\Source\Export\StaticBlock   $staticBlock   
-     * @param \Ves\Setup\Model\System\Config\Source\Export\Widgets       $widgets       
+     * @param \Ves\Setup\Model\System\Config\Source\Export\Widgets       $widgets      
+     * @param \Ves\Setup\Model\System\Config\Source\Export\Pagebuilder   $pagebuilder   
+     * @param \Ves\Setup\Model\System\Config\Source\Export\Megamenu      $megamenu    
      * @param \Magento\Store\Model\System\Store                          $systemStore   
      * @param \Ves\Setup\Model\System\Config\Source\Export\FileExtension $fileExtension 
+     * @param \Ves\Setup\Helper\Data                                     $setupHelper 
      * @param array                                                      $data          
      */
     public function __construct(
@@ -86,8 +101,11 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         \Ves\Setup\Model\System\Config\Source\Export\Cmspage $cmsPage,
         \Ves\Setup\Model\System\Config\Source\Export\Staticblock $staticBlock,
         \Ves\Setup\Model\System\Config\Source\Export\Widgets $widgets,
+        \Ves\Setup\Model\System\Config\Source\Export\Pagebuilder $pagebuilder,
+        \Ves\Setup\Model\System\Config\Source\Export\Megamenu $megamenu,
         \Magento\Store\Model\System\Store $systemStore,
         \Ves\Setup\Model\System\Config\Source\Export\FileExtension $fileExtension,
+        \Ves\Setup\Helper\Data $setupHelper,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
@@ -97,8 +115,11 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         $this->_cmsPage = $cmsPage;
         $this->_staticBlock = $staticBlock;
         $this->_widgets = $widgets;
+        $this->_pagebuilder = $pagebuilder;
+        $this->_megamenu = $megamenu;
         $this->_systemStore = $systemStore;
         $this->_fileExtension = $fileExtension;
+        $this->_setupHelper = $setupHelper;
     }
 
     /**
@@ -155,39 +176,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 ]
             );
 
-        $fieldset->addField(
-            'isdowload',
-            'select',
-                [
-                    'label' => __('Download File'),
-                    'title' => __('Download File'),
-                    'name' => 'isdowload',
-                    'options' => $this->_yesno->toArray(),
-                    'disabled' => $isElementDisabled
-                ]
-        );
-
-        $fieldset->addField(
-            'folder',
-            'select',
-                [
-                    'label' => __('Folder'),
-                    'title' => __('Folder'),
-                    'name' => 'folder',
-                    'options' => $this->_exportFolders->toArray(),
-                    'disabled' => $isElementDisabled,
-                    'note' => '<script type="text/javascript">
-                        require(["jquery"], function(){
-                            jQuery("#folder").change(function(){
-                                var val = jQuery(this).val();
-                                jQuery("#folder-note").html("");
-                                jQuery("#folder-note").append("Folder: "+val);
-                            }).change();
-                        });
-                    </script>'
-                ]
-        );
-
         $field = $fieldset->addField(
                 'store_id',
                 'select',
@@ -217,7 +205,12 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             );
             $field->setRenderer($renderer);
 
-        $field = $fieldset->addField(
+        $cmsFieldset = $form->addFieldset(
+                'cms_setting',
+                ['legend' => __('CMS Export'), 'class' => 'fieldset-wide']
+            );  
+
+        $field = $cmsFieldset->addField(
                 'cmspages',
                 'multiselect',
                 [
@@ -233,7 +226,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             );
             $field->setRenderer($renderer);
 
-        $field = $fieldset->addField(
+        $field = $cmsFieldset->addField(
                 'cmsblocks',
                 'multiselect',
                 [
@@ -249,14 +242,36 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             );
             $field->setRenderer($renderer);
 
-            $field = $fieldset->addField(
-                'widgets',
+        $field = $cmsFieldset->addField(
+            'widgets',
+            'multiselect',
+            [
+                'name' => 'widgets[]',
+                'label' => __('Widgets'),
+                'title' => __('Widgets'),
+                'values' => $this->_widgets->toOptionArray(),
+                'disabled' => $isElementDisabled
+            ]
+            );
+            $renderer = $this->getLayout()->createBlock(
+            'Ves\Setup\Block\Adminhtml\Form\Renderer\Fieldset\Element'
+            );
+            
+            $field->setRenderer($renderer);
+
+        if($this->_setupHelper->isModuleEnabled('Ves_PageBuilder')){
+            $pagebuilderFieldset = $form->addFieldset(
+                'pagebuilder_setting',
+                ['legend' => __('Pagebuilder Export (should select: Ves_PageBuilder)'), 'class' => 'fieldset-wide']
+            );
+            $field = $pagebuilderFieldset->addField(
+                'pageprofiles',
                 'multiselect',
                 [
-                    'name' => 'widgets[]',
-                    'label' => __('Widgets'),
-                    'title' => __('Widgets'),
-                    'values' => $this->_widgets->toOptionArray(),
+                    'name' => 'pageprofiles[]',
+                    'label' => __('Page Builder Profiles'),
+                    'title' => __('Page Builder Profiles'),
+                    'values' => $this->_pagebuilder->toOptionArray('page'),
                     'disabled' => $isElementDisabled
                 ]
             );
@@ -264,6 +279,45 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'Ves\Setup\Block\Adminhtml\Form\Renderer\Fieldset\Element'
             );
             $field->setRenderer($renderer);
+
+            $field = $pagebuilderFieldset->addField(
+                'elementprofiles',
+                'multiselect',
+                [
+                    'name' => 'elementprofiles[]',
+                    'label' => __('Element Profiles'),
+                    'title' => __('Element Profiles'),
+                    'values' => $this->_pagebuilder->toOptionArray('block'),
+                    'disabled' => $isElementDisabled
+                ]
+            );
+            $renderer = $this->getLayout()->createBlock(
+                'Ves\Setup\Block\Adminhtml\Form\Renderer\Fieldset\Element'
+            );
+            $field->setRenderer($renderer);
+        }
+
+        if($this->_setupHelper->isModuleEnabled('Ves_Megamenu')){
+            $megamenuFieldset = $form->addFieldset(
+                'megamenu_settings',
+                ['legend' => __('Megamenu Export (should select: Ves_Megamenu)'), 'class' => 'fieldset-wide']
+            );
+            $field = $megamenuFieldset->addField(
+                'megamenu',
+                'multiselect',
+                [
+                    'name' => 'megamenu[]',
+                    'label' => __('Megamenu Profiles'),
+                    'title' => __('Megamenu Profiles'),
+                    'values' => $this->_megamenu->toOptionArray(true),
+                    'disabled' => $isElementDisabled
+                ]
+            );
+            $renderer = $this->getLayout()->createBlock(
+                'Ves\Setup\Block\Adminhtml\Form\Renderer\Fieldset\Element'
+            );
+            $field->setRenderer($renderer);
+        }
 
         $form->setUseContainer(true);
         $this->setForm($form);

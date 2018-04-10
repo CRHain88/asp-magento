@@ -21,7 +21,8 @@
  	paths: {
         "menu.bootstrap": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min",
         "scrolltofixed": "Ves_Megamenu/js/jquery-scrolltofixed-min",
-        "megamenuowlcarousel": "Ves_All/lib/owl.carousel/owl.carousel.min"
+        "megamenuowlcarousel": "Ves_All/lib/owl.carousel/owl.carousel.min",
+        "megamenuGeneral": "Ves_Megamenu/js/megamenuGeneral"
     },
     shim: {
         'menu.bootstrap': {
@@ -31,6 +32,12 @@
             'deps': ['jquery']
         },
         'megamenuowlcarousel': {
+            'deps': ['jquery']
+        },
+        'megamenuGeneral': {
+            'deps': ['jquery']
+        },
+        'Ves_Megamenu/js/megamenuGeneral': {
             'deps': ['jquery']
         }
     }

@@ -75,9 +75,17 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         /**
          * Checking if user have permission to save information
          */
-        if($this->_isAllowedAction('Ves_Setup::export')){
+        if($this->_isAllowedAction('Ves_Megamenu::menu_edit')){
             $isElementDisabled = false;
         }else {
+            $isElementDisabled = true;
+        }
+
+        $this->_eventManager->dispatch(
+        'ves_check_license',
+        ['obj' => $this,'ex'=>'Ves_Megamenu']
+        );
+        if(!$this->getData('is_valid') && !$this->getData('local_valid')){
             $isElementDisabled = true;
         }
 
@@ -199,6 +207,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             ]
             );
 
+        
         $fieldset->addField(
             'desktop_template',
             'select',

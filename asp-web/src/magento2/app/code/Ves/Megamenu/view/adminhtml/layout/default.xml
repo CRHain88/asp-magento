@@ -25,4 +25,13 @@
 	<head>
 		<css src="Ves_Megamenu::css/style.css" />
 	</head>
+	<body>
+		<referenceContainer name="notices.wrapper">
+			<block class="Ves\All\Block\Adminhtml\License" name="megamenu_license">
+				<arguments>
+					<argument name="extension" xsi:type="string">Ves_Megamenu</argument>
+				</arguments>
+			</block>
+		</referenceContainer>
+	</body>
 </page>

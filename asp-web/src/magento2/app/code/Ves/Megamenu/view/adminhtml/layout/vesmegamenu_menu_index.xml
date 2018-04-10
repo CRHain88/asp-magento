@@ -24,7 +24,6 @@
     <update handle="styles"/>
     <body>
         <referenceContainer name="content">
-        	<block class="Ves\Megamenu\Block\Adminhtml\Menu\Edit\License" name="menu_message"/>
             <uiComponent name="megamenu_menu_listing"/>
         </referenceContainer>
     </body>

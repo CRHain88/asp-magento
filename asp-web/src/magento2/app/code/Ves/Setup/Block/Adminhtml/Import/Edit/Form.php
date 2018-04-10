@@ -113,52 +113,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         }
 
         $fieldset->addField(
-            'folder',
-            'select',
-                [
-                    'label' => __('Folder'),
-                    'title' => __('Folder'),
-                    'name' => 'folder',
-                    'options' => $fds,
-                    'disabled' => $isElementDisabled,
-                    'class' => 'ves-import'
-                ]
-        );
-        foreach ($this->_exportFolders->toArray() as $key => $val) {
-            $orginKey = $key;
-            $key = strtolower(str_replace("/", "-", $key));
-            $fieldPreset = $fieldset->addField($key,
-                'select', [
-                    'name'      => $key,
-                    'label'     => __('Select Configuration to Import'),
-                    'title'     => __('Select Configuration to Import'),
-                    'values'    => $this->_importFiles->toOptionArray($orginKey),
-                    'note' => '
-                    Folder: <strong>app/design/frontend/'.$orginKey.'/backup</strong>
-                    <script type="text/javascript">
-                    require(["jquery"], function(){
-                        jQuery("#'.$key.'").parents(".admin__field").hide();
-                        jQuery(".ves-import").change(function(){
-                            var folder_name = jQuery(this).val();
-                            if(folder_name!="'.$key.'"){
-                                jQuery("#'.$key.'").parents(".admin__field").hide();    
-                            }else{
-                                jQuery("#'.$key.'").parents(".admin__field").show();    
-                            }
-                        }).change();
-                        jQuery("#'.$key.'").change(function(){
-                            var data_import_file = jQuery(this).val();
-                            if(data_import_file == "data_import_file"){
-                                jQuery("#data_import_file").parents(".admin__field").show();
-                            }else{
-                                jQuery("#data_import_file").parents(".admin__field").hide();
-                            }
-                        }).change();
-                    });</script>'
-                ]);
-        }
-
-        $fieldset->addField(
             'data_import_file',
             'file',
             [
@@ -176,6 +130,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'label' => __('Overwrite Existing Blocks'),
                 'title' => __('Overwrite Existing Blocks'),
                 'values' => $this->_yesno->toArray(),
+                'value' => 1,
                 'note' => __('If set to <b>Yes</b>, the import data will override exist data. Check exits data according to the field <b>URL Key</b> of <b>Cms Pages</b> and the field <b>Identifier</b> of <b>Static Block</b>.<br><br>If set to <b>No</b>, the function import will empty data of all table of <b>CMS Page</b> and <b>Static Block</b>, then insert import data.')
             ]
         );

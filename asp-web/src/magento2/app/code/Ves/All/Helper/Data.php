@@ -4,9 +4,9 @@
  * 
  * NOTICE OF LICENSE
  * 
- * This source file is subject to the Venustheme.com license that is
+ * This source file is subject to the venustheme.com license that is
  * available through the world-wide-web at this URL:
- * http://www.venustheme.com/license-agreement.html
+ * http://venustheme.com/license
  * 
  * DISCLAIMER
  * 
@@ -15,11 +15,14 @@
  * 
  * @category   Venustheme
  * @package    Ves_All
- * @copyright  Copyright (c) 2014 Venustheme (http://www.venustheme.com/)
+ * @copyright  Copyright (c) 2017 Landofcoder (http://www.venustheme.com/)
  * @license    http://www.venustheme.com/LICENSE-1.0.html
  */
+
 namespace Ves\All\Helper;
+
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Module\Dir;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -55,18 +58,32 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_coreRegistry;
 
+    /**
+     * @param \Magento\Framework\App\Helper\Context      $context        
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager   
+     * @param \Magento\Cms\Model\Template\FilterProvider $filterProvider 
+     * @param \Magento\Framework\Filesystem              $filesystem     
+     * @param \Magento\Framework\Registry                $registry       
+     * @param \Magento\Framework\Module\Dir\Reader       $moduleReader   
+     * @param \Ves\All\Model\License                     $licnese        
+     */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Cms\Model\Template\FilterProvider $filterProvider,
         \Magento\Framework\Filesystem $filesystem,
-        \Magento\Framework\Registry $registry
-        ) {
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Module\Dir\Reader $moduleReader,
+        \Ves\All\Model\License $licnese
+    ) {
         parent::__construct($context);
         $this->_storeManager   = $storeManager;
         $this->_filterProvider = $filterProvider;
         $this->_filesystem     = $filesystem;
         $this->_coreRegistry   = $registry;
+        $this->_license        = $licnese;
+        $this->_remoteAddress = $context->getRemoteAddress();
+        $this->_moduleReader  = $moduleReader;
     }
 
 	 /**
@@ -78,13 +95,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
      public function getConfig($key, $group = "vesall/general", $store = null)
      {
-        $store = $this->_storeManager->getStore($store);
+        $store     = $this->_storeManager->getStore($store);
         $websiteId = $store->getWebsiteId();
-
-        $result = $this->scopeConfig->getValue(
-            $group.'/'.$key,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store);
+        if ($this->_storeManager->isSingleStoreMode()) {
+            $result = $this->scopeConfig->getValue(
+                $group . '/' .$key,
+                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES
+                );
+        } else {
+            $result = $this->scopeConfig->getValue(
+                $group . '/' .$key,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $store);
+        }
         return $result;
     }
 
@@ -92,5 +115,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
     	$html = $this->_filterProvider->getPageFilter()->filter($str);
     	return $html;
+    }
+
+    public function getLicense($module_name) {
+        $ip          = $this->_remoteAddress->getRemoteAddress();
+        $file        = $this->_moduleReader->getModuleDir(Dir::MODULE_ETC_DIR, $module_name) . '/license.xml';
+        if(file_exists($file)) {
+            $xmlObj      = new \Magento\Framework\Simplexml\Config($file);
+            $xmlData     = $xmlObj->getNode();
+            if ($xmlData) {
+                $code = $xmlData->code;
+                $license = $this->_license->load($code);
+                return $license;
+            }
+            return false;
+        }else{
+            return true;
+        }
     }
 }

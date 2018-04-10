@@ -86,6 +86,10 @@ class Editor extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Ves\Megamenu\Model\Config\Source\AnimationsIn
      */
     protected $_animationsIn;
+    /**
+     * @var \Ves\Megamenu\Model\Config\Source\ListCmsPage
+     */
+    protected $listCmsPage;
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -106,6 +110,8 @@ class Editor extends \Magento\Framework\App\Helper\AbstractHelper
         \Ves\Megamenu\Model\Config\Source\ChilCol $childCol,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Cms\Model\Wysiwyg\Config $wysiwygConfig,
+        \Ves\Megamenu\Model\Config\Source\StoreCategories $storeCategories,
+        \Ves\Megamenu\Model\Config\Source\ListCmsPage $listCmsPage,
         \Magento\Framework\Url $url
         ) {
         parent::__construct($context);
@@ -127,436 +133,453 @@ class Editor extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_chilCol           = $childCol->toOptionArray();
         $this->_wysiwygConfig     = $wysiwygConfig;
         $this->_animationsIn      = $animationsIn->toOptionArray();
+        $this->storeCategories    = $storeCategories;
+        $this->listCmsPage        = $listCmsPage;
+    }
+
+    public function _construct(){
+      parent::_construct();
+      $this->prepareFields();
+  }
+
+  public function prepareFields() {
+    $categoryList = $this->storeCategories->getCategoryList();
+    $cmsList =  $this->listCmsPage->toOptionArray();
+
+    $this->addField("label1", [
+        'label' => __('General Information'),
+        'type'  => 'fieldset'
+        ]);
+
+    $this->addField("name", [
+        'label' => __('Name'),
+        'type'  => 'text'
+        ]);
+
+    $this->addField("classes", [
+        'label' => __('Classes'),
+        'type'  => 'text'
+        ]);
+
+    $this->addField("link_type", [
+        'label'  => __('Link Type'),
+        'type'   => 'select',
+        'values' => $this->_linkType
+        ]);
+
+    $this->addField("cms_page", [
+        'label'  => __('Cms Page'),
+        'type'   => 'select',
+        'values' => $cmsList,
+        'note'   => __('Choose a cms page to generate link for it.'),
+        'depend' => [
+        'field' => 'link_type',
+        'value' => 'custom_link'
+        ]
+        ]);
+
+    $this->addField("link", [
+        'label'  => __('Custom Link'),
+        'type'   => 'text',
+        'note'   => __('Enter hash (#) to make this item not clickable in the top main menu. '),
+        'depend' => [
+        'field' => 'link_type',
+        'value' => 'custom_link'
+        ]
+        ]);
+
+    $this->addField("category", [
+        'label'  => __('Category'),
+        'type'   => 'select',
+        'values' => $categoryList,
+        'depend' => [
+        'field' => 'link_type',
+        'value' => 'category_link'
+        ]
+        ]);
+
+    $this->addField("target", [
+        'label'  => __('Link Target'),
+        'type'   => 'select',
+        'value'  => '_self',
+        'values' => $this->_linkTarget,
+        'depend' => [
+        'field' => 'link_type',
+        'value' => 'category_link,custom_link'
+        ]
+        ]);
+
+    $this->addField("show_icon", [
+        'label'  => __('Show Icon'),
+        'type'   => 'select',
+        'value'  => 0,
+        'values' => $this->_yesno
+        ]);
+
+    $this->addField("icon", [
+        'label'  => __('Icon'),
+        'type'   => 'image',
+        'depend' => [
+        'field' => 'show_icon',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("hover_icon", [
+        'label'  => __('Hover Icon'),
+        'type'   => 'image',
+        'depend' => [
+        'field' => 'show_icon',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("icon_position", [
+        'label'  => __('Icon Position'),
+        'type'   => 'select',
+        'values' => $this->_iconPosition,
+        'depend' => [
+        'field' => 'show_icon',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("icon_classes", [
+        'label'  => __('Icon Classes'),
+        'type'   => 'text',
+        'depend' => [
+        'field' => 'show_icon',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("is_group", [
+        'label'  => __('Is Group'),
+        'type'   => 'select',
+        'value'  => 0,
+        'values' => $this->_yesno,
+        'note'   => __('Set to Yes and then both the menu and sub-menu items will be displayed in the same level.')
+        ]);
+
+    $this->addField("disable_bellow", [
+        'label' => __('Disable Dimesion'),
+        'type'  => 'text',
+        'note'  => __('Enter the width(pixel) want to disable this item. Empty to disable this feature.<br/><strong>Bootstrap 3 Media Query Breakpoints</strong><br/>Large Devices, Wide Screens: 1200px<br/>Medium Devices, Desktops: 992px<br/>Small Devices, Tablets: 768px<br/>Extra Small Devices, Phones: 480px<br/>iPhone Retina: 320px')
+        ]);
+
+
+    $this->addField("status", [
+        'label'  => __('Status'),
+        'type'   => 'select',
+        'values' => $this->_yesno
+        ]);
+
+    $this->addField("label8", [
+        'label' => __('Dropdown'),
+        'type'  => 'fieldset'
+        ]);
+
+    $this->addField("sub_width", [
+        'label' => __('Width'),
+        'type'  => 'text'
+        ]);
+
+    $this->addField("animation_in", [
+        'label'  => __('Animation In'),
+        'type'   => 'select',
+        'note'   => __('Check animations menu at <a href="https://daneden.github.io/animate.css" target="_blank">here</a>'),
+        'values' => $this->_animationsIn,
+        ]);
+
+    $this->addField("animation_time", [
+        'label'  => __('Animation Time(s)'),
+        'type'   => 'text',
+        'value'  => '0.5',
+        ]);
+
+    $this->addField("align", [
+        'label'  => __('Alignment'),
+        'type'   => 'select',
+        'value'  => '1',
+        'values' => $this->_alignType,
+        ]);
+
+    $this->addField("dropdown_bgcolor", [
+        'label' => __('Background Color'),
+        'type'  => 'color',
+        ]);
+
+    $this->addField("dropdown_bgimage", [
+        'label' => __('Background Image'),
+        'type'  => 'image'
+        ]);
+
+    $this->addField("dropdown_bgimagerepeat", [
+        'label'  => __('Background Repeat'),
+        'type'   => 'select',
+        'value'  => '1',
+        'values' => $this->_repeatType
+        ]);
+
+    $this->addField("dropdown_bgpositionx", [
+        'label' => __('Background Position X'),
+        'type'  => 'text'
+        ]);
+
+    $this->addField("dropdown_bgpositiony", [
+        'label' => __('Background Position Y'),
+        'type'  => 'text'
+        ]);
+
+    $this->addField("dropdown_inlinecss", [
+        'label' => __('Inline CSS'),
+        'type'  => 'textarea',
+        'note'  => __('Semi-colon separated.')
+        ]);
+
+    $this->addField("label2", [
+        'label' => __('Header'),
+        'type'  => 'fieldset'
+        ]);
+
+    $this->addField("show_header", [
+        'label'  => __('Enabled'),
+        'type'   => 'select',
+        'value'  => 0,
+        'values' => $this->_yesno
+        ]);
+
+    $this->addField("header_html", [
+        'label' => __('Top HTML'),
+        'type'  => 'editor',
+        'depend' => [
+        'field' => 'show_header',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("label3", [
+        'label' => __('Left Block'),
+        'type'  => 'fieldset'
+        ]);
+
+    $this->addField("show_left_sidebar", [
+        'label'  => __('Enabled'),
+        'type'   => 'select',
+        'value'  => 0,
+        'values' => $this->_yesno
+        ]);
+
+    $this->addField("left_sidebar_width", [
+        'label' => __('Width'),
+        'type'  => 'text',
+        'depend' => [
+        'field' => 'show_left_sidebar',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("left_sidebar_html", [
+        'label' => __('HTML'),
+        'type'  => 'editor',
+        'depend' => [
+        'field' => 'show_left_sidebar',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("label4", [
+        'label' => __('Main Content'),
+        'type'  => 'fieldset'
+        ]);
+
+    $this->addField("show_content", [
+        'label'  => __('Enabled'),
+        'type'   => 'select',
+        'values' => $this->_yesno
+        ]);
+
+    $this->addField("content_width", [
+        'label' => __('Width'),
+        'type'  => 'text',
+        'value' => '100%'
+        ]);
+
+    $this->addField("content_type", [
+        'label'  => __('Main Content Type'),
+        'type'   => 'select',
+        'value'  => 'childmenu',
+        'values' => $this->_menuType
+        ]);
+
+    $this->addField("parentcat", [
+        'label'  => __('Parent Category'),
+        'type'   => 'select',
+        'values' => $this->_categoryList,
+        'note'  => __('Get sub-categories'),
+        'depend' => [
+        'field' => 'content_type',
+        'value' => 'parentcat'
+        ]
+        ]);
+
+    $this->addField("child_col", [
+        'label'  => __('Child Menu Column'),
+        'type'   => 'select',
+        'values' => $this->_chilCol,
+        'value'  => 1,
+        'depend' => [
+        'field' => 'content_type',
+        'value' => 'childmenu,parentcat'
+        ]
+        ]);
+
+    $this->addField("content_html", [
+        'label'  => __('Content HTML'),
+        'type'   => 'editor',
+        'depend' => [
+        'field' => 'content_type',
+        'value' => 'content'
+        ]
+        ]);
+
+    $this->addField("label5", [
+        'label' => __('Right Block'),
+        'type'  => 'fieldset'
+        ]);
+
+    $this->addField("show_right_sidebar", [
+        'label'  => __('Enabled'),
+        'value'  => 0,
+        'type'   => 'select',
+        'values' => $this->_yesno
+        ]);
+
+    $this->addField("right_sidebar_width", [
+        'label' => __('Width'),
+        'type'  => 'text',
+        'depend' => [
+        'field' => 'show_right_sidebar',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("right_sidebar_html", [
+        'label' => __('HTML'),
+        'type'  => 'editor',
+        'depend' => [
+        'field' => 'show_right_sidebar',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("label6", [
+        'label' => __('Bottom Block'),
+        'type'  => 'fieldset'
+        ]);
+
+    $this->addField("show_footer", [
+        'label'  => __('Enabled'),
+        'type'   => 'select',
+        'value'  => 0,
+        'values' => $this->_yesno
+        ]);
+
+    $this->addField("footer_html", [
+        'label' => __('HTML'),
+        'type'  => 'editor',
+        'depend' => [
+        'field' => 'show_footer',
+        'value' => 1
+        ]
+        ]);
+
+    $this->addField("menu_id", [
+        'label' => __('Menu ID'),
+        'class' => 'ves-hidden',
+        'type'  => 'text'
+        ]);
+
+    $this->addField("item_id", [
+        'label' => __('Item ID'),
+        'class' => 'ves-hidden',
+        'type'  => 'text'
+        ]);
+
+    $this->addField("label7", [
+        'label' => __('Design'),
+        'type'  => 'fieldset'
+        ]);
+
+    $this->addField("color", [
+        'label' => __('Text Color'),
+        'type'  => 'color'
+        ]);
+
+    $this->addField("hover_color", [
+        'label' => __('Hover Text Color'),
+        'type'  => 'color'
+        ]);
+
+    $this->addField("bg_color", [
+        'label' => __('Background Color'),
+        'type'  => 'color'
+        ]);
+
+    $this->addField("bg_hover_color", [
+        'label' => __('Background Hover Color'),
+        'type'  => 'color'
+        ]);
+
+    $this->addField("inline_css", [
+        'label' => __('Inline CSS'),
+        'type'  => 'textarea',
+        'note'  => __('Semi-colon separated.')
+        ]);
+}
+
+public function getFields(){
+    if (!isset($this->_fields)) {
         $this->prepareFields();
     }
+  return $this->_fields;
+}
 
-	public function _construct(){
-		parent::_construct();
-		$this->prepareFields();
-	}
-
-	public function prepareFields(){
-
-        $this->addField("label1", [
-                'label' => __('General Information'),
-                'type'  => 'fieldset'
-            ]);
-
-        $this->addField("name", [
-                'label' => __('Name'),
-                'type'  => 'text'
-            ]);
-
-        $this->addField("classes", [
-                'label' => __('Classes'),
-                'type'  => 'text'
-            ]);
-
-        $this->addField("link_type", [
-                'label'  => __('Link Type'),
-                'type'   => 'select',
-                'values' => $this->_linkType
-            ]);
-
-        $this->addField("link", [
-                'label'  => __('Custom Link'),
-                'type'   => 'text',
-                'note'   => __('Enter hash (#) to make this item not clickable in the top main menu. '),
-                'depend' => [
-                    'field' => 'link_type',
-                    'value' => 'custom_link'
-                ]
-            ]);
-
-        $this->addField("category", [
-            'label'  => __('Category'),
-            'type'   => 'select',
-            'values' => $this->_categoryList,
-            'depend' => [
-                'field' => 'link_type',
-                'value' => 'category_link'
-                ]
-            ]);
-
-        $this->addField("target", [
-            'label'  => __('Link Target'),
-            'type'   => 'select',
-            'value'  => '_self',
-            'values' => $this->_linkTarget,
-            'depend' => [
-                'field' => 'link_type',
-                'value' => 'category_link,custom_link'
-                ]
-            ]);
-
-        $this->addField("show_icon", [
-                'label'  => __('Show Icon'),
-                'type'   => 'select',
-                'value'  => 0,
-                'values' => $this->_yesno
-            ]);
-
-        $this->addField("icon", [
-            'label'  => __('Icon'),
-            'type'   => 'image',
-            'depend' => [
-                'field' => 'show_icon',
-                'value' => 1
-                ]
-            ]);
-
-        $this->addField("hover_icon", [
-            'label'  => __('Hover Icon'),
-            'type'   => 'image',
-            'depend' => [
-                'field' => 'show_icon',
-                'value' => 1
-                ]
-            ]);
-
-        $this->addField("icon_position", [
-            'label'  => __('Icon Position'),
-            'type'   => 'select',
-            'values' => $this->_iconPosition,
-            'depend' => [
-                'field' => 'show_icon',
-                'value' => 1
-                ]
-            ]);
-
-        $this->addField("icon_classes", [
-            'label'  => __('Icon Classes'),
-            'type'   => 'text',
-            'depend' => [
-                'field' => 'show_icon',
-                'value' => 1
-                ]
-            ]);
-
-        $this->addField("is_group", [
-            'label'  => __('Is Group'),
-            'type'   => 'select',
-            'value'  => 0,
-            'values' => $this->_yesno,
-            'note'   => __('Set to Yes and then both the menu and sub-menu items will be displayed in the same level.')
-            ]);
-
-        $this->addField("disable_bellow", [
-            'label' => __('Disable Dimesion'),
-            'type'  => 'text',
-            'note'  => __('Enter the width(pixel) want to disable this item. Empty to disable this feature.<br/><strong>Bootstrap 3 Media Query Breakpoints</strong><br/>Large Devices, Wide Screens: 1200px<br/>Medium Devices, Desktops: 992px<br/>Small Devices, Tablets: 768px<br/>Extra Small Devices, Phones: 480px<br/>iPhone Retina: 320px')
-            ]);
-
-
-        $this->addField("status", [
-            'label'  => __('Status'),
-            'type'   => 'select',
-            'values' => $this->_yesno
-            ]);
-
-        $this->addField("label8", [
-            'label' => __('Dropdown'),
-            'type'  => 'fieldset'
-            ]);
-
-        $this->addField("sub_width", [
-            'label' => __('Width'),
-            'type'  => 'text'
-            ]);
-
-        $this->addField("animation_in", [
-            'label'  => __('Animation In'),
-            'type'   => 'select',
-            'note'   => __('Check animations menu at <a href="https://daneden.github.io/animate.css" target="_blank">here</a>'),
-            'values' => $this->_animationsIn,
-            ]);
-
-        $this->addField("animation_time", [
-            'label'  => __('Animation Time(s)'),
-            'type'   => 'text',
-            'value'  => '0.5',
-            ]);
-
-        $this->addField("align", [
-            'label'  => __('Alignment'),
-            'type'   => 'select',
-            'value'  => '1',
-            'values' => $this->_alignType,
-            ]);
-
-        $this->addField("dropdown_bgcolor", [
-            'label' => __('Background Color'),
-            'type'  => 'color',
-            ]);
-
-        $this->addField("dropdown_bgimage", [
-            'label' => __('Background Image'),
-            'type'  => 'image'
-            ]);
-
-        $this->addField("dropdown_bgimagerepeat", [
-            'label'  => __('Background Repeat'),
-            'type'   => 'select',
-            'value'  => '1',
-            'values' => $this->_repeatType
-            ]);
-
-        $this->addField("dropdown_bgpositionx", [
-            'label' => __('Background Position X'),
-            'type'  => 'text'
-            ]);
-
-        $this->addField("dropdown_bgpositiony", [
-            'label' => __('Background Position Y'),
-            'type'  => 'text'
-            ]);
-
-        $this->addField("dropdown_inlinecss", [
-            'label' => __('Inline CSS'),
-            'type'  => 'textarea',
-            'note'  => __('Semi-colon separated.')
-            ]);
-
-        $this->addField("label2", [
-            'label' => __('Header'),
-            'type'  => 'fieldset'
-            ]);
-
-        $this->addField("show_header", [
-            'label'  => __('Enabled'),
-            'type'   => 'select',
-            'value'  => 0,
-            'values' => $this->_yesno
-            ]);
-
-        $this->addField("header_html", [
-            'label' => __('Top HTML'),
-            'type'  => 'editor',
-            'depend' => [
-                    'field' => 'show_header',
-                    'value' => 1
-                ]
-            ]);
-
-        $this->addField("label3", [
-            'label' => __('Left Block'),
-            'type'  => 'fieldset'
-            ]);
-
-        $this->addField("show_left_sidebar", [
-            'label'  => __('Enabled'),
-            'type'   => 'select',
-            'value'  => 0,
-            'values' => $this->_yesno
-            ]);
-
-        $this->addField("left_sidebar_width", [
-            'label' => __('Width'),
-            'type'  => 'text',
-            'depend' => [
-                    'field' => 'show_left_sidebar',
-                    'value' => 1
-                ]
-            ]);
-
-        $this->addField("left_sidebar_html", [
-            'label' => __('HTML'),
-            'type'  => 'editor',
-            'depend' => [
-                    'field' => 'show_left_sidebar',
-                    'value' => 1
-                ]
-            ]);
-
-        $this->addField("label4", [
-            'label' => __('Main Content'),
-            'type'  => 'fieldset'
-            ]);
-
-        $this->addField("show_content", [
-            'label'  => __('Enabled'),
-            'type'   => 'select',
-            'values' => $this->_yesno
-            ]);
-
-        $this->addField("content_width", [
-            'label' => __('Width'),
-            'type'  => 'text',
-            'value' => '100%'
-            ]);
-
-        $this->addField("content_type", [
-            'label'  => __('Main Content Type'),
-            'type'   => 'select',
-            'value'  => 'childmenu',
-            'values' => $this->_menuType
-            ]);
-
-        $this->addField("parentcat", [
-            'label'  => __('Parent Category'),
-            'type'   => 'select',
-            'values' => $this->_categoryList,
-            'note'  => __('Get sub-categories'),
-            'depend' => [
-                    'field' => 'content_type',
-                    'value' => 'parentcat'
-                ]
-            ]);
-
-        $this->addField("child_col", [
-            'label'  => __('Child Menu Column'),
-            'type'   => 'select',
-            'values' => $this->_chilCol,
-            'value'  => 1,
-            'depend' => [
-                    'field' => 'content_type',
-                    'value' => 'childmenu,parentcat'
-                ]
-            ]);
-
-        $this->addField("content_html", [
-            'label'  => __('Content HTML'),
-            'type'   => 'editor',
-            'depend' => [
-                    'field' => 'content_type',
-                    'value' => 'content'
-                ]
-            ]);
-
-        $this->addField("label5", [
-            'label' => __('Right Block'),
-            'type'  => 'fieldset'
-            ]);
-
-        $this->addField("show_right_sidebar", [
-            'label'  => __('Enabled'),
-            'value'  => 0,
-            'type'   => 'select',
-            'values' => $this->_yesno
-            ]);
-
-        $this->addField("right_sidebar_width", [
-            'label' => __('Width'),
-            'type'  => 'text',
-            'depend' => [
-                    'field' => 'show_right_sidebar',
-                    'value' => 1
-                ]
-            ]);
-
-        $this->addField("right_sidebar_html", [
-            'label' => __('HTML'),
-            'type'  => 'editor',
-            'depend' => [
-                    'field' => 'show_right_sidebar',
-                    'value' => 1
-                ]
-            ]);
-
-        $this->addField("label6", [
-            'label' => __('Bottom Block'),
-            'type'  => 'fieldset'
-            ]);
-
-        $this->addField("show_footer", [
-            'label'  => __('Enabled'),
-            'type'   => 'select',
-            'value'  => 0,
-            'values' => $this->_yesno
-            ]);
-
-        $this->addField("footer_html", [
-            'label' => __('HTML'),
-            'type'  => 'editor',
-            'depend' => [
-                    'field' => 'show_footer',
-                    'value' => 1
-                ]
-            ]);
-
-        $this->addField("menu_id", [
-            'label' => __('Menu ID'),
-            'class' => 'ves-hidden',
-            'type'  => 'text'
-            ]);
-
-        $this->addField("item_id", [
-            'label' => __('Item ID'),
-            'class' => 'ves-hidden',
-            'type'  => 'text'
-            ]);
-
-        $this->addField("label7", [
-            'label' => __('Design'),
-            'type'  => 'fieldset'
-            ]);
-
-        $this->addField("color", [
-            'label' => __('Text Color'),
-            'type'  => 'color'
-            ]);
-
-        $this->addField("hover_color", [
-            'label' => __('Hover Text Color'),
-            'type'  => 'color'
-            ]);
-
-        $this->addField("bg_color", [
-            'label' => __('Background Color'),
-            'type'  => 'color'
-            ]);
-
-        $this->addField("bg_hover_color", [
-            'label' => __('Background Hover Color'),
-            'type'  => 'color'
-            ]);
-
-        $this->addField("inline_css", [
-            'label' => __('Inline CSS'),
-            'type'  => 'textarea',
-            'note'  => __('Semi-colon separated.')
-            ]);
+public function addField($name, $params)
+{
+    if(isset($params['type']) && $params['type'] == 'separator'){
+        $params['class'] = 'ves-separator';
     }
-
-	public function getFields(){
-		return $this->_fields;
-	}
-
-	public function addField($name, $params)
-    {
-        if(isset($params['type']) && $params['type'] == 'separator'){
-            $params['class'] = 'ves-separator';
-        }
-        $params['name'] = $name;
-        $this->_fields[$name] = $params;
-        if (!empty($params['renderer']) && $params['renderer'] instanceof \Magento\Framework\View\Element\AbstractBlock) {
-            $this->_fields[$name]['renderer'] = $params['renderer'];
-        }
+    $params['name'] = $name;
+    $this->_fields[$name] = $params;
+    if (!empty($params['renderer']) && $params['renderer'] instanceof \Magento\Framework\View\Element\AbstractBlock) {
+        $this->_fields[$name]['renderer'] = $params['renderer'];
     }
+}
 
-    protected function _getCellInputElementName($fieldName)
-    {
-        return 'items[<%- _id %>][' . $fieldName . ']';
-    }
+protected function _getCellInputElementName($fieldName)
+{
+    return 'items[<%- _id %>][' . $fieldName . ']';
+}
 
-    public function _optionToHtml($option)
-    {
-        $class = $html = '';
-        if(isset($option['class'])){
-            $class = 'class="'.$option['class'].'"';
-        }
-        if (is_array($option['value'])) {
-            $html = '<optgroup '.$class.' label="' . $option['label'] . '">';
-            foreach ($option['value'] as $groupItem) {
-                $html .= $this->_optionToHtml($groupItem);
-            }
-            $html .= '</optgroup>';
-        } else {
-            $html = '<option '.$class.'  value="' . $option['value'] . '"';
-            $html .= '>' . $option['label'] . '</option>';
-        }
-        return $html;
+public function _optionToHtml($option)
+{
+    $class = $html = '';
+    if(isset($option['class'])){
+        $class = 'class="'.$option['class'].'"';
     }
+    if (is_array($option['value'])) {
+        $html = '<optgroup '.$class.' label="' . $option['label'] . '">';
+        foreach ($option['value'] as $groupItem) {
+            $html .= $this->_optionToHtml($groupItem);
+        }
+        $html .= '</optgroup>';
+    } else {
+        $html = '<option '.$class.'  value="' . $option['value'] . '"';
+        $html .= '>' . $option['label'] . '</option>';
+    }
+    return $html;
+}
 
     /**
      * @param string|null $route
@@ -623,9 +646,9 @@ class Editor extends \Magento\Framework\App\Helper\AbstractHelper
                         __('Upload Image'),
                         true
                         ) . "', '" . '' . "');",
-                ]
-                ]
-                )->toHtml();
+                        ]
+                        ]
+                        )->toHtml();
                 $html .= '</div>';
                 $html .= '<div class="field-cm">'.(isset($field['note'])?$field['note']:'').'</div>';
                 break;
@@ -645,9 +668,9 @@ class Editor extends \Magento\Framework\App\Helper\AbstractHelper
                     'onclick' => 'megamenuWysiwygEditor.open(\'' . $this->_backendData->getUrl(
                         'vesmegamenu/product/wysiwyg'
                         ) . '\', \''.$editorId.'\' , ' . json_encode($tinyMCEConfig) . ')',
-                ]
-                ]
-                )->toHtml();
+                    ]
+                    ]
+                    )->toHtml();
                 $html .= '<div class="field-cm">'.(isset($field['note'])?$field['note']:'').'</div>';
                 break;
                 case 'separator':
@@ -656,13 +679,14 @@ class Editor extends \Magento\Framework\App\Helper\AbstractHelper
                 break;
                 case 'color':
                 $id = 'option-'.time().rand();
-                $html = '<input class="ip-color" type="text" class="'.$classes.'" id="'.$id.'" style="background-color: red" data-bind="value: '.$fieldName.'"/>';
+                $html = '<input class="ip-color" type="text" class="'.$classes.'" id="'.$id.'"  data-bind="value: '.$fieldName.'"/>';
                 $mcPath = $mediaUrl.'ves/megamenu';
                 $html .= '<script>
                 require([
-                    "jquery",
-                    "Ves_Megamenu/js/mcolorpicker/mcolorpicker.min"
-                    ], function (jQuery) {
+                "jquery",
+                "Ves_Megamenu/js/mcolorpicker/mcolorpicker.min"
+                ], function ($) {
+                    jQuery(document).ready(function($){
                         var folderImageUrl = "'.$mcPath.'/images";
                         jQuery.noConflict();
                         jQuery.fn.mColorPicker.init.replace = false;
@@ -676,14 +700,14 @@ class Editor extends \Magento\Framework\App\Helper\AbstractHelper
                         jQuery(document).on("click", "#'.$id.'", function(){
                             jQuery("#icp_'. $id .' img").trigger("click");
                         });
-    
+                        
                         jQuery(document).on("change", "#'.$id.'", function(){
                             var value = jQuery(this).val();
                             if(value == "transparent"){
                                 jQuery(this).css("color", "#000");
                             }
                         }).change();
-
+                    });
                 });</script>';
                 $html .= '<div class="field-cm">'.(isset($field['note'])?$field['note']:'').'</div>';
                 break;

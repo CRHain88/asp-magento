@@ -24,8 +24,10 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 class Item extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context        
-     * @param [type]                                            $connectionName 
+     * Construct
+     *
+     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param null $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,

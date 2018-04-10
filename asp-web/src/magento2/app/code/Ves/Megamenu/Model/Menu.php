@@ -28,6 +28,11 @@ class Menu extends \Magento\Framework\Model\AbstractModel
     const STATUS_DISABLED = 0;
 
     /**
+     * Menu cache tag
+     */
+    const CACHE_TAG = 'megamenu_menu';
+    const CACHE_WIDGET_TAG = 'megamenu_menu_widget';
+    /**
      * Product collection factory
      *
      * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
@@ -181,6 +186,16 @@ class Menu extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Get identities
+     *
+     * @return array
+     */
+    public function getIdentities()
+    {
+        return [self::CACHE_TAG . '_' . $this->getId(), self::CACHE_TAG . '_' . $this->getAlias()];
+    }
+
+    /**
      * Synchronize object's stored data with the actual data
      *
      * @return $this
@@ -193,5 +208,8 @@ class Menu extends \Magento\Framework\Model\AbstractModel
             $this->storedData = [];
         }
         return $this;
+    }
+    public function getStoresIds(){
+        return $this->_getResource()->lookupStoreIds($this->getId());
     }
 }

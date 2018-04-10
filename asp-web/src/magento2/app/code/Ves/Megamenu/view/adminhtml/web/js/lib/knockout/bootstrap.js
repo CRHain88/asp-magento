@@ -9,7 +9,7 @@
     'ko',
     'Magento_Ui/js/lib/knockout/template/engine',
     'knockoutjs/knockout-es5',
-    'Magento_Ui/js/lib/knockout/bindings/bootstrap',
+    /*'Magento_Ui/js/lib/knockout/bindings/bootstrap',*/
     'Magento_Ui/js/lib/knockout/extender/observable_array',
     'Magento_Ui/js/lib/knockout/extender/bound-nodes',
     'domReady!'
@@ -19,5 +19,10 @@
             // ko.uid = 0;
             // ko.setTemplateEngine(templateEngine);
             // ko.applyBindings();
+        } else {
+            //ko.uid = 0;
+
+            //ko.setTemplateEngine(templateEngine);
+            //ko.applyBindings();
         }
     });

@@ -67,23 +67,48 @@ class MobileMenu extends \Magento\Framework\View\Element\Template
         }
         $store = $this->_storeManager->getStore();
         $html = $menu = '';
-        $tmp = $this->_objectManager->create('\Ves\Megamenu\Model\Menu'); 
+        $menu = $this->getData('menu');
+        $alias = $this->getData('alias');
+        $menu_id = $this->getData('id');
 
-        if ($menuId = $this->getData('id')) {
-            $menu = $tmp->setStore($store)->load((int)$menuId);
-        }elseif($alias = $this->getData('alias')){
-            $menu = $tmp->setStore($store)->load(addslashes($alias));
+        if(!$menu) {
+            $menu = $this->getMenuProfile($menu_id, $alias);
         }
+
         if($menu){
             $customerGroups = $menu->getData('customer_group_ids');
             $customerGroupId = (int)$this->_customerSession->getCustomerId();
             if($customerGroupId){
                 if(!in_array($customerGroupId, $customerGroups)) return;
             }
-        }
-        if($menu && $menu->getStatus()){
             $this->setData("menu", $menu);
         }
+        
         return parent::_toHtml();
+    }
+    public function getMenuProfile($menuId = 0, $alias = ""){
+        $menu = false;
+        $store = $this->_storeManager->getStore();
+        if($menuId){
+            $menu = $this->_menu->setStore($store)->load((int)$menuId);
+            if ($menu->getId() != $menuId) {
+                $menu = false;
+            }
+        } elseif($alias){
+            $menu = $this->_menu->setStore($store)->load(addslashes($alias));
+            if ($menu->getAlias() != $alias) {
+                $menu = false;
+            }
+        }
+        if ($menu && !$menu->getStatus()) {
+            $menu = false;
+        }
+        return $menu;
+    }
+    public function getConfig($key, $default = NULL){
+        if($this->hasData($key)){
+            return $this->getData($key);
+        }
+        return $default;
     }
 }

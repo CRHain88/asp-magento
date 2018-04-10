@@ -68,6 +68,7 @@ class MassEnable extends \Magento\Backend\App\Action
 
         foreach ($collection as $item) {
             $item->setStatus(true);
+            $item->setData('mass', true);
             $item->save();
         }
 

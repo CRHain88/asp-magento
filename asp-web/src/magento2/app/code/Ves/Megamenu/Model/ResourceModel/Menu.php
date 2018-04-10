@@ -58,8 +58,9 @@ class Menu extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context        
      * @param \Magento\Store\Model\StoreManagerInterface        $storeManager   
      * @param \Magento\Framework\Filesystem                     $filesystem     
-     * @param \Ves\Megamenu\Helper\Editor                       $editor         
-     * @param [type]                                            $connectionName 
+     * @param \Ves\Megamenu\Helper\Editor                       $editor
+     * @param \Ves\Megamenu\Helper\Data                         $vesData      
+     * @param string|null                                       $connectionName 
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
@@ -93,125 +94,106 @@ class Menu extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
     }
 
-    public function decodeImg($str){
-        $count = substr_count($str, "<img");
-        $mediaUrl = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
-        $firstPosition = 0;
-        for ($i=0; $i < $count; $i++) {
-            if($firstPosition==0) $tmp = $firstPosition;
-            if($tmp > $count) continue;//If position greater than max length of string, temp will equal = string length
-            if($tmp>strlen($str)) continue;
-            $firstPosition = strpos($str, "<img", $tmp);
-            $nextPosition = strpos($str, "/>", $firstPosition);
-            $tmp = $nextPosition;
-            if(!strpos($str, "<img")) continue;
-            $length = $nextPosition - $firstPosition;
-            $img = substr($str, $firstPosition, $length+2);
-            $newImg = $this->_vesData->filter($img);
-            $f = strpos($newImg, 'src="', 0)+5;
-            $n = strpos($newImg, '"', $f+5);
-            $src = substr($newImg, $f, ($n-$f));
-            if( !strpos($img, 'placeholder.gif')){
-                $src1 = '';
-                if( strpos($newImg, '___directive')){
-                    $e = strpos($newImg, '___directive', 0) + 13;
-                    $e1 = strpos($newImg, '/key', 0);
-                    $src1 = substr($newImg, $e, ($e1-$e));
-                    $src1 = base64_decode($src1);
-                }else{
-                    $mediaP = strpos($src, "wysiwyg", 0);
-                    $src1 = substr($src, $mediaP);
-                    $src1 = '{{media url="'.$src1.'"}}';
-                }
-                $newImg = str_replace($src, $src1, $newImg);
-                $str = str_replace($img, $newImg, $str);
-            }
-        }
-        return $str;
-    }
-
     protected function _afterSave(\Magento\Framework\Model\AbstractModel $object)
     {
-        $data = $object->getData();
-        if(isset($data['structure'])){
-            $table      = $this->getTable('ves_megamenu_item');
-            $where      = ['menu_id = ?' => (int)$object->getId()];
-            $this->getConnection()->delete($table, $where);
-        }
-        $params     = json_decode($object->getParams(), true);
-        $this->extractItem($params);
-        $items      = $this->_data;
-        $strucuture = json_decode($object->getStructure(), true);
-        $fields     = $this->editor->getFields();
-        $mediaUrl   = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
 
-        if(isset($data['structure']) && count($strucuture)>0){
-            try{
-                $data = [];
-                if(is_array($items)){
-                    foreach ($items as $k => $v) {
-                        $v['menu_id'] = (int)$object->getId();
-                        unset($v['id']);
-                        unset($v['htmlId']);
-                        $v['show_name'] = 1;
-                        if(is_array($v)){
-                            foreach ($v as $x => $y) {
-                                if(isset($fields[$x]) && ($fields[$x]['type']=='image' || $fields[$x]['type']=='file') ){
-                                    $v[$x] = str_replace($mediaUrl, "", $y);
+        $data = $object->getData();
+
+        if (!isset($data['mass'])) {
+            if(isset($data['structure'])){
+                $table      = $this->getTable('ves_megamenu_item');
+                $where      = ['menu_id = ?' => (int)$object->getId()];
+                $this->getConnection()->delete($table, $where);
+            }
+            $params     = json_decode($object->getParams(), true);
+            $this->extractItem($params);
+            $items      = $this->_data;
+            $strucuture = json_decode($object->getStructure(), true);
+            $fields     = $this->editor->getFields();
+            $mediaUrl   = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+
+            if(isset($data['structure']) && count($strucuture)>0){
+                try{
+                    $data = [];
+                    if(is_array($items)){
+                        foreach ($items as $k => $v) {
+                            $v['menu_id'] = (int)$object->getId();
+                            unset($v['id']);
+                            unset($v['htmlId']);
+                            $v['show_name'] = 1;
+                            if(is_array($v)){
+                                foreach ($v as $x => $y) {
+                                    if(isset($fields[$x]) && ($fields[$x]['type']=='image' || $fields[$x]['type']=='file') ){
+                                        $v[$x] = str_replace($mediaUrl, "", $y);
+                                    }
+                                    if(isset($fields[$x]) && $fields[$x]['type']=='editor'){
+                                        $v[$x] = $this->_vesData->decodeImg($y);
+                                        $v[$x] = $this->_vesData->decodeAnchor($v[$x]);
+                                    }
                                 }
-                                if(isset($fields[$x]) && $fields[$x]['type']=='editor'){
-                                    $v[$x] = $this->decodeImg($y);
+
+                                foreach ($fields as $k1 => $v1) {
+                                    if ($v1['type'] != 'fieldset') {
+                                        if(!isset($v[$k1])) {
+                                            $v[$k1] = '';
+                                        }
+                                    }
                                 }
                             }
+                            if(isset($v['cms_page'])) {
+                                unset($v['cms_page']);
+                            }
+                            $data[] = $v;
                         }
-                        $data[] = $v;
                     }
+                    $this->getConnection()->insertMultiple($table, $data);
+                }catch(\Exception $e){
+                    throw new \Magento\Framework\Exception\LocalizedException(new \Magento\Framework\Phrase($e->getMessage()));
+                }
+            }
+
+            $oldStores = $this->lookupStoreIds($object->getId());
+            $newStores = (array)$object->getStores();
+            if (empty($newStores)) {
+                $newStores = (array)$object->getStoreId();
+            }
+            $table = $this->getTable('ves_megamenu_menu_store');
+            $insert = array_diff($newStores, $oldStores);
+            $delete = array_diff($oldStores, $newStores);
+            if ($delete) {
+                $where = ['menu_id = ?' => (int)$object->getId(), 'store_id IN (?)' => $delete];
+
+                $this->getConnection()->delete($table, $where);
+            }
+
+            if ($insert) {
+                $data = [];
+                foreach ($insert as $storeId) {
+                    $data[] = ['menu_id' => (int)$object->getId(), 'store_id' => (int)$storeId];
                 }
                 $this->getConnection()->insertMultiple($table, $data);
-            }catch(\Exception $e){
-                throw new \Magento\Framework\Exception\LocalizedException(new \Magento\Framework\Phrase($e->getMessage()));
             }
-        }
 
-        $oldStores = $this->lookupStoreIds($object->getId());
-        $newStores = (array)$object->getStores();
-        if (empty($newStores)) {
-            $newStores = (array)$object->getStoreId();
-        }
-        $table = $this->getTable('ves_megamenu_menu_store');
-        $insert = array_diff($newStores, $oldStores);
-        $delete = array_diff($oldStores, $newStores);
-        if ($delete) {
-            $where = ['menu_id = ?' => (int)$object->getId(), 'store_id IN (?)' => $delete];
-
-            $this->getConnection()->delete($table, $where);
-        }
-
-        if ($insert) {
-            $data = [];
-            foreach ($insert as $storeId) {
-                $data[] = ['menu_id' => (int)$object->getId(), 'store_id' => (int)$storeId];
+            // CUSTOMER GROUP
+            $oldCustomerGroups = $this->lookupCustomerGroupIds($object->getId());
+            $newCustomerGroups = (array)$object->getCustomerGroupIds();
+            $table = $this->getTable('ves_megamenu_menu_customergroup');
+            $insert = array_diff($newCustomerGroups, $oldCustomerGroups);
+            $delete = array_diff($oldCustomerGroups, $newCustomerGroups);
+            if ($delete) {
+                $where = ['menu_id = ?' => (int)$object->getId(), 'customer_group_id IN (?)' => $delete];
+                $this->getConnection()->delete($table, $where);
             }
-            $this->getConnection()->insertMultiple($table, $data);
+            if ($insert) {
+                $data = [];
+                foreach ($insert as $storeId) {
+                    $data[] = ['menu_id' => (int)$object->getId(), 'customer_group_id' => (int)$storeId];
+                }
+                $this->getConnection()->insertMultiple($table, $data);
+            }
+
         }
 
-        // CUSTOMER GROUP
-        $oldCustomerGroups = $this->lookupCustomerGroupIds($object->getId());
-        $newCustomerGroups = (array)$object->getCustomerGroupIds();
-        $table = $this->getTable('ves_megamenu_menu_customergroup');
-        $insert = array_diff($newCustomerGroups, $oldCustomerGroups);
-        $delete = array_diff($oldCustomerGroups, $newCustomerGroups);
-        if ($delete) {
-            $where = ['menu_id = ?' => (int)$object->getId(), 'customer_group_id IN (?)' => $delete];
-            $this->getConnection()->delete($table, $where);
-        }
-        if ($insert) {
-            $data = [];
-            foreach ($insert as $storeId) {
-                $data[] = ['menu_id' => (int)$object->getId(), 'customer_group_id' => (int)$storeId];
-            }
-            $this->getConnection()->insertMultiple($table, $data);
-        }
         return parent::_afterSave($object);
     }
 
@@ -358,7 +340,7 @@ class Menu extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $data = $object->getData();
 
-        if($this->_vesData->getConfig('general_settings/enable_backup') && !isset($data['duplicate'])){
+        if($this->_vesData->getConfig('general_settings/enable_backup') && !isset($data['duplicate']) && isset($data['form_key'])){
             $form_key = $data['form_key'];
             unset($data['form_key']);
             if ((!isset($data['revert_previous']) && !isset($data['revert_next'])) && !empty($data) && isset($data['structure'])) {
@@ -415,17 +397,16 @@ class Menu extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                         $version = (int)$result[0]['version'] + 1;
                     }
                     $menuData = [
-                        'menu_id'        => $menuId,
-                        'version'        => $version,
-                        'menu_data'      => base64_encode(serialize($data)),
-                        'menu_structure' => $structure,
-                        'note'           => 'Note',
-                        'update_time'    => time()
+                    'menu_id'        => $menuId,
+                    'version'        => $version,
+                    'menu_data'      => base64_encode(serialize($data)),
+                    'menu_structure' => $structure,
+                    'note'           => 'Note',
+                    'update_time'    => time()
                     ];
                     $this->getConnection()->insert($table, $menuData);
                     $object->setData('current_version', $version);
                 } catch (\Exception $e) {
-                    die($e->getMessage());
                 }
             }
 

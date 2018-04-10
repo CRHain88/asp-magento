@@ -7,11 +7,13 @@
 define([
     'jquery',
     'mage/apply/main',
+    'mage/backend/notification',
     'Ves_Megamenu/js/lib/knockout/bootstrap',
-    'mage/mage'
-], function($, mage){
+    'mage/mage',
+    'mage/translate'
+], function($, mage, notification){
     'use strict';
-
+    var bootstrap;
     $.ajaxSetup({
         /*
          * @type {string}
@@ -59,10 +61,32 @@ define([
                     }
                 } catch(e) {}
             }
+        },
+        /**
+         * Error callback.
+         */
+        error: function () {
+            $('body').notification('clear')
+                .notification('add', {
+                    error: true,
+                    message: $.mage.__(
+                        'A technical problem with the server created an error. ' +
+                        'Try again to continue what you were doing. If the problem persists, try again later.'
+                    ),
+
+                    /**
+                     * @param {String} message
+                     */
+                    insertMethod: function (message) {
+                        var $wrapper = $('<div/>').html(message);
+
+                        $('.page-main-actions').after($wrapper);
+                    }
+                });
         }
     });
 
-    var bootstrap = function() {
+    bootstrap = function() {
         /**
          * Init all components defined via data-mage-init attribute
          * and subscribe init action on contentUpdated event
@@ -72,7 +96,7 @@ define([
         /*
          * Initialization of notification widget
          */
-        $('body').mage('notification');
+        notification({}, $('body'));
     };
 
     $(bootstrap);

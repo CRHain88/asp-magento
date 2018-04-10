@@ -25,7 +25,6 @@
     <head>
         <css src="Ves_Megamenu::css/styles.css" />
         <css src="Ves_Megamenu::css/font-awesome.min.css" />
-        <script src="jquery.js" />
     </head>
     <body>
         <referenceContainer name="content">

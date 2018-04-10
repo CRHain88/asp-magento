@@ -43,36 +43,8 @@ class ChilCol implements OptionSourceInterface
                 'value' => 4,
             ];
         $options[] = [
-                'label' => '5',
-                'value' => 5,
-            ];
-        $options[] = [
                 'label' => '6',
                 'value' => 6,
-            ];
-        $options[] = [
-                'label' => '7',
-                'value' => 7,
-            ];
-        $options[] = [
-                'label' => '8',
-                'value' => 8,
-            ];
-        $options[] = [
-                'label' => '9',
-                'value' => 9,
-            ];
-        $options[] = [
-                'label' => '10',
-                'value' => 10,
-            ];
-        $options[] = [
-                'label' => '11',
-                'value' => 11,
-            ];
-        $options[] = [
-                'label' => '12',
-                'value' => 12,
             ];
         return $options;
     }

@@ -24,7 +24,7 @@ class License extends \Magento\Framework\View\Element\Template
 {
 	protected function _toHtml(){
 		$this->_eventManager->dispatch(
-			'lof_check_license',
+			'ves_check_license',
 			['obj' => $this,'ex'=>'Ves_Megamenu']
 			);
 		if(!$this->getData('is_valid')){

@@ -5,9 +5,9 @@
  * 
  * NOTICE OF LICENSE
  * 
- * This source file is subject to the Venustheme.com license that is
+ * This source file is subject to the venustheme.com license that is
  * available through the world-wide-web at this URL:
- * http://www.venustheme.com/license-agreement.html
+ * http://venustheme.com/license
  * 
  * DISCLAIMER
  * 
@@ -16,16 +16,16 @@
  * 
  * @category   Venustheme
  * @package    Ves_All
- * @copyright  Copyright (c) 2014 Venustheme (http://www.venustheme.com/)
+ * @copyright  Copyright (c) 2017 Landofcoder (http://www.venustheme.com/)
  * @license    http://www.venustheme.com/LICENSE-1.0.html
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
 	<system>
 		<tab id="vesalltab" translate="label" sortOrder="400">
-			<label><![CDATA[Ves All - <a href="http://venustheme.com" target="_BLANK" title="Venustheme.com - Premium Magento Template Club">Venustheme.com</a>]]></label>
+			<label><![CDATA[<a href="http://venustheme.com" target="_BLANK" title="Venustheme.com - Premium Magento Template Club">Venustheme.com</a>]]></label>
 		</tab>
-		<section id="vesall" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+		<section id="vesall" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
 			<class>separator-top</class>
 			<label>All</label>
 			<tab>vesalltab</tab>
@@ -66,12 +66,12 @@
 		</section>
 		<section id="veslicense" translate="label" type="text" sortOrder="990" showInDefault="1" showInWebsite="1" showInStore="1">
 			<class>separator-top</class>
-			<label>Mange Licenses</label>
+			<label>Manage Licenses</label>
 			<tab>vesalltab</tab>
 			<resource>Ves_All::config</resource>
 			<group id="general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
 				<field id="licenses" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Mange Licenses</label>
+					<label>Manage Licenses</label>
 					<frontend_model>Ves\All\Block\Adminhtml\System\ListLicense</frontend_model>
 				</field>
 			</group>

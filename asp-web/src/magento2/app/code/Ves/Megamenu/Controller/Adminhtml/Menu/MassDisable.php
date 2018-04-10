@@ -69,6 +69,7 @@ class MassDisable extends \Magento\Backend\App\Action
 
         foreach ($collection as $item) {
             $item->setStatus(false);
+            $item->setData('mass', true);
             $item->save();
         }
 

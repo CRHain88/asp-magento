@@ -23,6 +23,7 @@ namespace Ves\Megamenu\Setup;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
+use Magento\Framework\DB\Ddl\Table;
 
 /**
  * @codeCoverageIgnore
@@ -37,6 +38,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     {
         $installer = $setup;
         $installer->startSetup();
+        $tableMenu = $installer->getTable('ves_megamenu_menu');
         $tableItems = $installer->getTable('ves_megamenu_item');
 
         $installer->getConnection()->addColumn(
@@ -272,18 +274,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
         )->addIndex(
             $installer->getIdxName('ves_megamenu_menu_customergroup', ['customer_group_id']),
             ['customer_group_id']
-        )->addForeignKey(
-            $installer->getFkName('ves_megamenu_menu_customergroup', 'menu_id', 'ves_megamenu_menu', 'menu_id'),
-            'menu_id',
-            $installer->getTable('ves_megamenu_menu'),
-            'menu_id',
-            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
-        )->addForeignKey(
-            $installer->getFkName('ves_megamenu_menu_customergroup', 'customer_group_id', 'customer_group', 'customer_group_id'),
-            'customer_group_id',
-            $installer->getTable('customer_group'),
-            'customer_group_id',
-            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
         )->setComment(
             'Menu Custom Group'
         );
@@ -340,6 +330,119 @@ class UpgradeSchema implements UpgradeSchemaInterface
         )->setComment(
             'Menu Log'
         );
+
+        //Update for version 1.1.3
+        if (version_compare($context->getVersion(), '1.1.3', '<')) {
+            //$foreignKeys = $this->getForeignKeys($installer);
+            //$this->dropForeignKeys($installer, $foreignKeys);
+            //$this->alterTables($installer, $foreignKeys);
+            //$this->createForeignKeys($installer, $foreignKeys);
+
+            $installer->getConnection()->modifyColumn(
+                $installer->getTable('ves_megamenu_menu_customergroup'),
+                'customer_group_id',
+                [
+                    'type' => 'integer',
+                    'unsigned' => true,
+                    'nullable' => false
+                ]
+            );
+            /*
+            Alter table add foreign key
+
+            $installer->getConnection()->addForeignKey(
+                $key['FK_NAME'],
+                $key['TABLE_NAME'],
+                $key['COLUMN_NAME'],
+                $key['REF_TABLE_NAME'],
+                $key['REF_COLUMN_NAME'],
+                $key['ON_DELETE']
+            );
+
+            */
+            /*
+            $installer->getConnection()
+                ->addForeignKey(
+                    $installer->getFkName('ves_megamenu_menu_customergroup', 'menu_id', 'ves_megamenu_menu', 'menu_id'),
+                    $installer->getTable('ves_megamenu_menu_customergroup'),
+                    'menu_id',
+                    $installer->getTable('ves_megamenu_menu'),
+                    'menu_id',
+                    Table::ACTION_CASCADE
+                );*/
+        }
+        //Update for version 1.1.4
+        if (version_compare($context->getVersion(), '1.1.4', '<')) {
+            $installer->getConnection()->addColumn(
+                $tableItems,
+                'cms_page',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'length' => 150,
+                    'nullable' => true,
+                    'comment' => 'Cms Page Identifier'
+                ]
+            );
+            $installer->getConnection()->addColumn(
+                $tableMenu,
+                'disable_above',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'nullable' => true,
+                    'comment' => 'Disable Above'
+                ]
+            );
+        }
         $installer->getConnection()->createTable($table);
+    }
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param array $keys
+     * @return void
+     */
+    private function dropForeignKeys(SchemaSetupInterface $setup, array $keys)
+    {
+        foreach ($keys as $key) {
+            $setup->getConnection()->dropForeignKey($key['TABLE_NAME'], $key['FK_NAME']);
+        }
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param array $keys
+     * @return void
+     */
+    private function createForeignKeys(SchemaSetupInterface $setup, array $keys)
+    {
+        foreach ($keys as $key) {
+            $setup->getConnection()->addForeignKey(
+                $key['FK_NAME'],
+                $key['TABLE_NAME'],
+                $key['COLUMN_NAME'],
+                $key['REF_TABLE_NAME'],
+                $key['REF_COLUMN_NAME'],
+                $key['ON_DELETE']
+            );
+        }
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @return array
+     */
+    private function getForeignKeys(SchemaSetupInterface $setup)
+    {
+        $foreignKeys = [];
+        $keysTree = $setup->getConnection()->getForeignKeysTree();
+        foreach ($keysTree as $indexes) {
+            foreach ($indexes as $index) {
+                if ($index['REF_TABLE_NAME'] == $setup->getTable('ves_megamenu_menu_customergroup')
+                    && $index['REF_COLUMN_NAME'] == 'customer_group_id'
+                ) {
+                    $foreignKeys[] = $index;
+                }
+            }
+        }
+        return $foreignKeys;
     }
 }

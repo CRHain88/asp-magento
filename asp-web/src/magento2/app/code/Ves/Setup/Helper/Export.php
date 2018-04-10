@@ -118,6 +118,7 @@ class Export extends \Magento\Framework\App\Helper\AbstractHelper
 						$connection = $this->_resource->getConnection();
 						if($this->checkTableExists($tableName, $connection)){
 							$select = 'SELECT * FROM ' . $this->_resource->getTableName($tableName);
+							$select .= $this->buildCondition($tableName, $data, $v);
 							$rows = $connection->fetchAll($select);
 							$configs[$v]['tables'][$tableName] = $rows;
 						}
@@ -240,13 +241,51 @@ class Export extends \Magento\Framework\App\Helper\AbstractHelper
 		return $configs;
 	}
 
+	public function buildCondition($tableName, $data, $module_key) {
+		$where = "";
+		if($module_key == "Ves_PageBuilder") {
+			$page_ids = isset($data['pageprofiles'])?$data['pageprofiles']:array();
+			$element_ids = isset($data['elementprofiles'])?$data['elementprofiles']:array();
+			$block_ids = array_merge($page_ids, $element_ids);
+			if($block_ids) {
+				switch ($tableName) {
+					case 'ves_blockbuilder_block':
+					case 'ves_blockbuilder_widget':
+						$where = " WHERE `block_id` IN (".implode(",", $block_ids).")";
+						break;
+					default:
+						# code...
+						break;
+				}
+			}
+		}
+
+		if($module_key == "Ves_Megamenu") {
+			$menu_ids = isset($data['megamenu'])?$data['megamenu']:array();
+			if($menu_ids) {
+				switch ($tableName) {
+					case 'ves_megamenu_menu':
+					case 'ves_megamenu_menu_store':
+					case 'ves_megamenu_item':
+						$where = " WHERE `menu_id` IN (".implode(",", $menu_ids).")";
+						break;
+					default:
+						# code...
+						break;
+				}
+			}
+		}
+		
+		return $where;
+	}
+
 	public function getModuleTables() {
 		$sql_tables = [
 		"Ves_Blog" => ["ves_blog_category", "ves_blog_category_store","ves_blog_post", "ves_blog_post_author", "ves_blog_post_category", "ves_blog_post_tag", "ves_blog_post_related", "ves_blog_post_store", "ves_blog_comment", "ves_blog_comment_store", "ves_blog_post_vote", "ves_blog_post_products_related"],
 		"Ves_PageBuilder" => ["ves_blockbuilder_block", "ves_blockbuilder_cms","ves_blockbuilder_page","ves_blockbuilder_widget"],
 		"Ves_Brand" => ["ves_brand_group", "ves_brand","ves_brand_store"],
 		"Ves_Megamenu" => ["ves_megamenu_menu", "ves_megamenu_menu_store","ves_megamenu_item","ves_megamenu_menu_customergroup"],
-		"Ves_Testimonial" => ["ves_testimonial_testimonial","ves_testimonial_testimonial_store"],
+		"Ves_Testimonial" => ["ves_testimonial_testimonial","ves_testimonial_testimonial_store","ves_testimonial_category","ves_testimonial_testimonial_category","ves_testimonial_testimonial_product"],
 		"Magento_Cms_Page" => ["cms_page", "cms_page_store"],
 		"Magento_Cms_Block" => ["cms_block", "cms_block_store"],
 		"Magento_Widget" => ["widget", "widget_instance", "widget_instance_page", "widget_instance_page_layout", "core_layout_link", "core_layout_update"]

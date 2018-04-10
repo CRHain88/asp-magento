@@ -177,17 +177,6 @@ class Editor extends \Magento\Backend\Block\Widget\Form\Renderer\Fieldset\Elemen
         return $this->toHtml();
     }
 
-    public function _toHtml(){
-        $this->_eventManager->dispatch(
-         'lof_check_license',
-         ['obj' => $this]
-         );
-        if(!$this->getData('is_valid')){
-            return;
-        }
-        return parent::_toHtml();
-    }
-
     public function getMenu(){
         $model = $this->_coreRegistry->registry('megamenu_menu');
         return $model;

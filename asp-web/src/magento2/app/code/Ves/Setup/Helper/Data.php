@@ -52,6 +52,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $vesthemeDirectory;
 
+    protected $_moduleManager;
+
     /**
      * @param \Magento\Framework\App\Helper\Context                      $context                
      * @param \Magento\Store\Model\StoreManagerInterface                 $storeManager           
@@ -77,6 +79,31 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     	$this->_collectionThemeFactory = $collectionThemeFactory;
     	$this->_filesystem = $filesystem;
         $this->_themeModel = $themeModel;
+        if(!isset($this->_moduleManager)){
+            $this->_moduleManager = $context->getModuleManager();
+        }
+    }
+
+    /**
+     * Whether a module is enabled in the configuration or not
+     *
+     * @param string $moduleName Fully-qualified module name
+     * @return boolean
+     */
+    public function isModuleEnabled($moduleName)
+    {
+        return $this->_moduleManager->isEnabled($moduleName);
+    }
+    
+    /**
+     * Whether a module output is permitted by the configuration or not
+     *
+     * @param string $moduleName Fully-qualified module name
+     * @return boolean
+     */
+    public function isOutputEnabled($moduleName)
+    {
+        return $this->_moduleManager->isOutputEnabled($moduleName);
     }
 	/**
      * Check if current url is url for home page
