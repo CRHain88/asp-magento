@@ -8,12 +8,9 @@ namespace Magento\Setup\Test\Unit\Fixtures;
 
 use \Magento\Setup\Fixtures\OrdersFixture;
 
-/**
- * Class OrdersFixtureTest
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
 {
+
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject|\Magento\Setup\Fixtures\FixtureModel
      */
@@ -26,7 +23,7 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->fixtureModelMock = $this->getMock(\Magento\Setup\Fixtures\FixtureModel::class, [], [], '', false);
+        $this->fixtureModelMock = $this->getMock('\Magento\Setup\Fixtures\FixtureModel', [], [], '', false);
 
         $this->model = new OrdersFixture($this->fixtureModelMock);
     }
@@ -38,19 +35,19 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
     public function testExecute()
     {
         $mockObjectNames = [
-            \Magento\Quote\Model\ResourceModel\Quote::class,
-            \Magento\Quote\Model\ResourceModel\Quote\Address::class,
-            \Magento\Quote\Model\ResourceModel\Quote\Item::class,
-            \Magento\Quote\Model\ResourceModel\Quote\Item\Option::class,
-            \Magento\Quote\Model\ResourceModel\Quote\Payment::class,
-            \Magento\Quote\Model\ResourceModel\Quote\Address\Rate::class,
-            \Magento\Reports\Model\ResourceModel\Event::class,
-            \Magento\Sales\Model\ResourceModel\Order::class,
-            \Magento\Sales\Model\ResourceModel\Order\Grid::class,
-            \Magento\Sales\Model\ResourceModel\Order\Item::class,
-            \Magento\Sales\Model\ResourceModel\Order\Payment::class,
-            \Magento\Sales\Model\ResourceModel\Order\Status\History::class,
-            \Magento\Eav\Model\ResourceModel\Entity\Store::class
+            'Magento\Quote\Model\ResourceModel\Quote',
+            'Magento\Quote\Model\ResourceModel\Quote\Address',
+            'Magento\Quote\Model\ResourceModel\Quote\Item',
+            'Magento\Quote\Model\ResourceModel\Quote\Item\Option',
+            'Magento\Quote\Model\ResourceModel\Quote\Payment',
+            'Magento\Quote\Model\ResourceModel\Quote\Address\Rate',
+            'Magento\Reports\Model\ResourceModel\Event',
+            'Magento\Sales\Model\ResourceModel\Order',
+            'Magento\Sales\Model\ResourceModel\Order\Grid',
+            'Magento\Sales\Model\ResourceModel\Order\Item',
+            'Magento\Sales\Model\ResourceModel\Order\Payment',
+            'Magento\Sales\Model\ResourceModel\Order\Status\History',
+            '\Magento\Eav\Model\ResourceModel\Entity\Store'
         ];
         $mockObjects = [];
 
@@ -58,7 +55,7 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
             $mockObject = $this->getMock($mockObjectName, ['getTable'], [], '', false);
             $path = explode('\\', $mockObjectName);
             $name = array_pop($path);
-            if (strcasecmp($mockObjectName, \Magento\Sales\Model\ResourceModel\Order::class) == 0) {
+            if (strcasecmp($mockObjectName, 'Magento\Sales\Model\ResourceModel\Order') == 0) {
                 $mockObject->expects($this->exactly(2))
                     ->method('getTable')
                     ->willReturn(strtolower($name) . '_table_name');
@@ -71,7 +68,7 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
         }
 
         $connectionInterfaceMock = $this->getMockForAbstractClass(
-            \Magento\Framework\DB\Adapter\AdapterInterface::class,
+            '\Magento\Framework\DB\Adapter\AdapterInterface',
             [],
             '',
             true,
@@ -83,12 +80,12 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
             ->method('getTableName')
             ->willReturn('table_name');
 
-        $resourceMock = $this->getMock(\Magento\Framework\App\ResourceConnection::class, [], [], '', false);
+        $resourceMock = $this->getMock('Magento\Framework\App\ResourceConnection', [], [], '', false);
         $resourceMock->expects($this->exactly(15))
             ->method('getConnection')
             ->willReturn($connectionInterfaceMock);
 
-        $websiteMock = $this->getMock(\Magento\Store\Model\Website::class, ['getId', 'getName'], [], '', false);
+        $websiteMock = $this->getMock('\Magento\Store\Model\Website', ['getId', 'getName'], [], '', false);
         $websiteMock->expects($this->once())
             ->method('getId')
             ->willReturn('website_id');
@@ -96,13 +93,13 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
             ->method('getName')
             ->willReturn('website_name');
 
-        $groupMock = $this->getMock(\Magento\Store\Model\Group::class, ['getName'], [], '', false);
+        $groupMock = $this->getMock('\Magento\Store\Model\Group', ['getName'], [], '', false);
         $groupMock->expects($this->once())
             ->method('getName')
             ->willReturn('group_name');
 
         $storeMock = $this->getMock(
-            \Magento\Store\Model\Store::class,
+            '\Magento\Store\Model\Store',
             [
                 'getStoreId',
                 'getWebsite',
@@ -130,14 +127,14 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
             ->method('getRootCategoryId')
             ->willReturn(1);
 
-        $storeManagerMock = $this->getMock(\Magento\Store\Model\StoreManager::class, [], [], '', false);
+        $storeManagerMock = $this->getMock('Magento\Store\Model\StoreManager', [], [], '', false);
         $storeManagerMock->expects($this->once())
             ->method('getStores')
             ->willReturn([$storeMock]);
 
-        $contextMock = $this->getMock(\Magento\Framework\Model\ResourceModel\Db\Context::class, [], [], '', false);
+        $contextMock = $this->getMock('\Magento\Framework\Model\ResourceModel\Db\Context', [], [], '', false);
         $abstractDbMock = $this->getMockForAbstractClass(
-            \Magento\Framework\Model\ResourceModel\Db\AbstractDb::class,
+            '\Magento\Framework\Model\ResourceModel\Db\AbstractDb',
             [$contextMock],
             '',
             true,
@@ -149,7 +146,7 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
             ->method('getAllChildren')
             ->will($this->returnValue([1]));
 
-        $categoryMock = $this->getMock(\Magento\Catalog\Model\Category::class, [], [], '', false);
+        $categoryMock = $this->getMock('Magento\Catalog\Model\Category', [], [], '', false);
         $categoryMock->expects($this->once())
             ->method('getResource')
             ->willReturn($abstractDbMock);
@@ -159,17 +156,11 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
         $categoryMock->expects($this->exactly(2))
             ->method('getName')
             ->willReturn('category_name');
-        $categoryMock->expects($this->exactly(4))
+        $categoryMock->expects($this->exactly(5))
             ->method('load')
             ->willReturnSelf();
 
-        $productMock = $this->getMock(
-            \Magento\Catalog\Model\Product::class,
-            ['load', 'getSku', 'getName'],
-            [],
-            '',
-            false
-        );
+        $productMock = $this->getMock('\Magento\Catalog\Model\Product', ['load', 'getSku', 'getName'], [], '', false);
         $productMock->expects($this->exactly(2))
             ->method('load')
             ->willReturnSelf();
@@ -180,15 +171,9 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
             ->method('getName')
             ->willReturn('product_name');
 
-        $selectMock = $this->getMock(\Magento\Framework\DB\Select::class, [], [], '', false);
+        $selectMock = $this->getMock('\Magento\Framework\DB\Select', [], [], '', false);
 
-        $collectionMock = $this->getMock(
-            \Magento\Catalog\Model\ResourceModel\Product\Collection::class,
-            [],
-            [],
-            '',
-            false
-        );
+        $collectionMock = $this->getMock('\Magento\Catalog\Model\ResourceModel\Product\Collection', [], [], '', false);
         $collectionMock->expects($this->once())
             ->method('getSelect')
             ->willReturn($selectMock);
@@ -198,15 +183,15 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
 
         array_push(
             $mockObjects,
-            [\Magento\Store\Model\StoreManager::class, [], $storeManagerMock],
-            [\Magento\Catalog\Model\Category::class, $categoryMock],
-            [\Magento\Catalog\Model\Product::class, $productMock],
-            [\Magento\Framework\App\ResourceConnection::class, $resourceMock],
-            [\Magento\Catalog\Model\ResourceModel\Product\Collection::class, [], $collectionMock]
+            ['Magento\Store\Model\StoreManager', [], $storeManagerMock],
+            ['Magento\Catalog\Model\Category', $categoryMock],
+            ['Magento\Catalog\Model\Product', $productMock],
+            ['Magento\Framework\App\ResourceConnection', $resourceMock],
+            ['Magento\Catalog\Model\ResourceModel\Product\Collection', [], $collectionMock]
         );
 
-        $objectManagerMock = $this->getMock(\Magento\Framework\ObjectManager\ObjectManager::class, [], [], '', false);
-        $objectManagerMock->expects($this->exactly(31))
+        $objectManagerMock = $this->getMock('Magento\Framework\ObjectManager\ObjectManager', [], [], '', false);
+        $objectManagerMock->expects($this->exactly(32))
             ->method('get')
             ->will($this->returnValueMap($mockObjects));
         $objectManagerMock->expects($this->exactly(2))
@@ -218,7 +203,7 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
             ->method('getValue')
             ->willReturn(1);
         $this->fixtureModelMock
-            ->expects($this->exactly(33))
+            ->expects($this->exactly(34))
             ->method('getObjectManager')
             ->willReturn($objectManagerMock);
 
@@ -228,7 +213,7 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
     public function testNoFixtureConfigValue()
     {
         $connectionMock = $this->getMockForAbstractClass(
-            \Magento\Framework\DB\Adapter\AdapterInterface::class,
+            '\Magento\Framework\DB\Adapter\AdapterInterface',
             [],
             '',
             true,
@@ -239,16 +224,16 @@ class OrdersFixtureTest extends \PHPUnit_Framework_TestCase
         $connectionMock->expects($this->never())
             ->method('query');
 
-        $resourceMock = $this->getMock(\Magento\Framework\App\ResourceConnection::class, [], [], '', false);
+        $resourceMock = $this->getMock('Magento\Framework\App\ResourceConnection', [], [], '', false);
         $resourceMock->expects($this->never())
             ->method('getConnection')
             ->with($this->equalTo('write'))
             ->willReturn($connectionMock);
 
-        $objectManagerMock = $this->getMock(\Magento\Framework\ObjectManager\ObjectManager::class, [], [], '', false);
+        $objectManagerMock = $this->getMock('Magento\Framework\ObjectManager\ObjectManager', [], [], '', false);
         $objectManagerMock->expects($this->never())
             ->method('get')
-            ->with($this->equalTo(\Magento\Framework\App\ResourceConnection::class))
+            ->with($this->equalTo('Magento\Framework\App\ResourceConnection'))
             ->willReturn($resourceMock);
 
         $this->fixtureModelMock

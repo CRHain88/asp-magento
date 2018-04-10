@@ -416,10 +416,7 @@ define([
         _loadContent: function () {
             var url = this.element.find(this.options.ajaxUrlElement).attr("href");
             if(url) {
-                this.xhr = $.get({
-                    url: url,
-                    dataType: 'html'
-                }, function () {
+                this.xhr = $.get(url, function () {
                 });
             }
             var that = this;

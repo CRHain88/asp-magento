@@ -25,35 +25,30 @@ class ImportTest extends \PHPUnit_Framework_TestCase
     protected $_importConfig;
 
     /**
-     * @var \Magento\Framework\Indexer\IndexerRegistry
-     */
-    protected $indexerRegistry;
-
-    /**
      * Expected entity behaviors
      *
      * @var array
      */
     protected $_entityBehaviors = [
         'catalog_product' => [
-            'token' => \Magento\ImportExport\Model\Source\Import\Behavior\Basic::class,
+            'token' => 'Magento\ImportExport\Model\Source\Import\Behavior\Basic',
             'code' => 'basic_behavior',
             'notes' => [
                 \Magento\ImportExport\Model\Import::BEHAVIOR_REPLACE => "Note: Product IDs will be regenerated."
             ],
         ],
         'customer_composite' => [
-            'token' => \Magento\ImportExport\Model\Source\Import\Behavior\Basic::class,
+            'token' => 'Magento\ImportExport\Model\Source\Import\Behavior\Basic',
             'code' => 'basic_behavior',
             'notes' => [],
         ],
         'customer' => [
-            'token' => \Magento\ImportExport\Model\Source\Import\Behavior\Custom::class,
+            'token' => 'Magento\ImportExport\Model\Source\Import\Behavior\Custom',
             'code' => 'custom_behavior',
             'notes' => [],
         ],
         'customer_address' => [
-            'token' => \Magento\ImportExport\Model\Source\Import\Behavior\Custom::Class,
+            'token' => 'Magento\ImportExport\Model\Source\Import\Behavior\Custom',
             'code' => 'custom_behavior',
             'notes' => [],
         ],
@@ -65,24 +60,18 @@ class ImportTest extends \PHPUnit_Framework_TestCase
      * @var array
      */
     protected $_uniqueBehaviors = [
-        'basic_behavior' => \Magento\ImportExport\Model\Source\Import\Behavior\Basic::class,
-        'custom_behavior' => \Magento\ImportExport\Model\Source\Import\Behavior\Custom::class,
+        'basic_behavior' => 'Magento\ImportExport\Model\Source\Import\Behavior\Basic',
+        'custom_behavior' => 'Magento\ImportExport\Model\Source\Import\Behavior\Custom',
     ];
 
     protected function setUp()
     {
-        $this->indexerRegistry = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Framework\Indexer\IndexerRegistry::class
-        );
         $this->_importConfig = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\ImportExport\Model\Import\Config::class
+            'Magento\ImportExport\Model\Import\Config'
         );
         $this->_model = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\ImportExport\Model\Import::class,
-            [
-                'importConfig' => $this->_importConfig,
-                'indexerRegistry' => $this->indexerRegistry
-            ]
+            'Magento\ImportExport\Model\Import',
+            ['importConfig' => $this->_importConfig]
         );
     }
 
@@ -93,7 +82,7 @@ class ImportTest extends \PHPUnit_Framework_TestCase
     {
         /** @var $customersCollection \Magento\Customer\Model\ResourceModel\Customer\Collection */
         $customersCollection = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Customer\Model\ResourceModel\Customer\Collection::class
+            'Magento\Customer\Model\ResourceModel\Customer\Collection'
         );
 
         $existCustomersCount = count($customersCollection->load());
@@ -119,7 +108,7 @@ class ImportTest extends \PHPUnit_Framework_TestCase
         $this->_model->setEntity('catalog_product');
         /** @var \Magento\ImportExport\Model\Import\AbstractSource|\PHPUnit_Framework_MockObject_MockObject $source */
         $source = $this->getMockForAbstractClass(
-            \Magento\ImportExport\Model\Import\AbstractSource::class,
+            'Magento\ImportExport\Model\Import\AbstractSource',
             [['sku', 'name']]
         );
         $source->expects($this->any())->method('_getNextRow')->will($this->returnValue(false));
@@ -133,7 +122,7 @@ class ImportTest extends \PHPUnit_Framework_TestCase
     public function testValidateSourceException()
     {
         $source = $this->getMockForAbstractClass(
-            \Magento\ImportExport\Model\Import\AbstractSource::class,
+            'Magento\ImportExport\Model\Import\AbstractSource',
             [],
             '',
             false
@@ -205,73 +194,5 @@ class ImportTest extends \PHPUnit_Framework_TestCase
             $this->assertArrayHasKey($behaviorCode, $actualBehaviors);
             $this->assertEquals($behaviorClass, $actualBehaviors[$behaviorCode]);
         }
-    }
-
-    /**
-     * Check if index is not broken when update by schedule and broken when update on save.
-     *
-     * @param $expectedStatus
-     * @param $schedule
-     * @return void
-     * @dataProvider invalidateIndexDataProvider
-     */
-    public function testInvalidateIndex($expectedStatus, $schedule)
-    {
-        $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-
-        $indexerName = 'catalog_product';
-
-        /** @var  $config \Magento\ImportExport\Model\Import\ConfigInterface*/
-        $config = $objectManager->create(\Magento\ImportExport\Model\Import\ConfigInterface::class);
-
-        $relatedIndexers = $config->getRelatedIndexers($indexerName);
-
-        /** @var \Magento\Framework\Indexer\StateInterface $state */
-        $state = $objectManager->get(\Magento\Framework\Indexer\StateInterface::class);
-
-        foreach (array_keys($relatedIndexers) as $indexerId) {
-            try {
-                $state->loadByIndexer($indexerId);
-                $state->setStatus(\Magento\Framework\Indexer\StateInterface::STATUS_VALID);
-
-                /** @var \Magento\Indexer\Model\Indexer $indexer */
-                $indexer = $this->indexerRegistry->get($indexerId);
-                $indexer->setState($state);
-                $indexer->setScheduled($schedule);
-            } catch (\InvalidArgumentException $e) {
-            }
-        }
-
-        $this->_model->setData('entity', $indexerName);
-        $this->_model->invalidateIndex();
-
-        foreach (array_keys($relatedIndexers) as $indexerId) {
-            try {
-                /** @var \Magento\Indexer\Model\Indexer $indexer */
-                $indexer = $this->indexerRegistry->get($indexerId);
-                $state = $indexer->getState();
-                self::assertEquals($expectedStatus, $state->getStatus());
-            } catch (\InvalidArgumentException $e) {
-            }
-        }
-    }
-
-    /**
-     * Data provider for test 'testSaveStockItemQtyCheckIndexes'
-     *
-     * @return array
-     */
-    public function invalidateIndexDataProvider()
-    {
-        return [
-            'Update by schedule' => [
-                '$expectedStatus' => \Magento\Framework\Indexer\StateInterface::STATUS_VALID,
-                '$schedule' => true,
-            ],
-            'Update on save' => [
-                '$expectedStatus' =>  \Magento\Framework\Indexer\StateInterface::STATUS_INVALID,
-                '$schedule' => false,
-            ]
-        ];
     }
 }

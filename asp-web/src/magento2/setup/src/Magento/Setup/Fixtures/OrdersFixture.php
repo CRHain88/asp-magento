@@ -10,7 +10,6 @@ use Magento\Framework\App\ResourceConnection;
 
 /**
  * Class OrdersFixture
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class OrdersFixture extends Fixture
 {
@@ -35,66 +34,66 @@ class OrdersFixture extends Fixture
 
         $quoteTableName = $this->getTableName(
             'quote',
-            \Magento\Quote\Model\ResourceModel\Quote::class
+            'Magento\Quote\Model\ResourceModel\Quote'
         );
         $quoteAddressTableName = $this->getTableName(
             'quote_address',
-            \Magento\Quote\Model\ResourceModel\Quote\Address::class
+            'Magento\Quote\Model\ResourceModel\Quote\Address'
         );
         $quoteItemTableName = $this->getTableName(
             'quote_item',
-            \Magento\Quote\Model\ResourceModel\Quote\Item::class
+            'Magento\Quote\Model\ResourceModel\Quote\Item'
         );
         $quoteItemOptionTableName = $this->getTableName(
             'quote_item_option',
-            \Magento\Quote\Model\ResourceModel\Quote\Item\Option::class
+            'Magento\Quote\Model\ResourceModel\Quote\Item\Option'
         );
         $quotePaymentTableName = $this->getTableName(
             'quote_payment',
-            \Magento\Quote\Model\ResourceModel\Quote\Payment::class
+            'Magento\Quote\Model\ResourceModel\Quote\Payment'
         );
         $quoteAddressRateTableName = $this->getTableName(
             'quote_shipping_rate',
-            \Magento\Quote\Model\ResourceModel\Quote\Address\Rate::class
+            'Magento\Quote\Model\ResourceModel\Quote\Address\Rate'
         );
         $reportEventTableName = $this->getTableName(
             'report_event',
-            \Magento\Reports\Model\ResourceModel\Event::class
+            'Magento\Reports\Model\ResourceModel\Event'
         );
         $salesOrderTableName = $this->getTableName(
             'sales_order',
-            \Magento\Sales\Model\ResourceModel\Order::class
+            'Magento\Sales\Model\ResourceModel\Order'
         );
         $salesOrderAddressTableName = $this->getTableName(
             'sales_order_address',
-            \Magento\Sales\Model\ResourceModel\Order::class
+            'Magento\Sales\Model\ResourceModel\Order'
         );
         $salesOrderGridTableName = $this->getTableName(
             'sales_order_grid',
-            \Magento\Sales\Model\ResourceModel\Order\Grid::class
+            'Magento\Sales\Model\ResourceModel\Order\Grid'
         );
         $salesOrderItemTableName = $this->getTableName(
             'sales_order_item',
-            \Magento\Sales\Model\ResourceModel\Order\Item::class
+            'Magento\Sales\Model\ResourceModel\Order\Item'
         );
         $salesOrderPaymentTableName = $this->getTableName(
             'sales_order_payment',
-            \Magento\Sales\Model\ResourceModel\Order\Payment::class
+            'Magento\Sales\Model\ResourceModel\Order\Payment'
         );
         $salesOrderStatusHistoryTableName = $this->getTableName(
             'sales_order_status_history',
-            \Magento\Sales\Model\ResourceModel\Order\Status\History::class
+            'Magento\Sales\Model\ResourceModel\Order\Status\History'
         );
         $eavEntityStoreTableName = $this->getTableName(
             'eav_entity_store',
-            \Magento\Eav\Model\ResourceModel\Entity\Store::class
+            '\Magento\Eav\Model\ResourceModel\Entity\Store'
         );
         /** @var \Magento\Store\Model\StoreManager $storeManager */
-        $storeManager = $this->fixtureModel->getObjectManager()->create(\Magento\Store\Model\StoreManager::class);
+        $storeManager = $this->fixtureModel->getObjectManager()->create('Magento\Store\Model\StoreManager');
         /** @var $category \Magento\Catalog\Model\Category */
-        $category = $this->fixtureModel->getObjectManager()->get(\Magento\Catalog\Model\Category::class);
+        $category = $this->fixtureModel->getObjectManager()->get('Magento\Catalog\Model\Category');
         /** @var $product \Magento\Catalog\Model\Product */
-        $product = $this->fixtureModel->getObjectManager()->get(\Magento\Catalog\Model\Product::class);
+        $product = $this->fixtureModel->getObjectManager()->get('Magento\Catalog\Model\Product');
 
         $result = [];
         $stores = $storeManager->getStores();
@@ -125,14 +124,17 @@ class OrdersFixture extends Fixture
                 }
                 //Not use root categories
                 if (trim($resultsCategoryName) != '') {
+                    /** @var $productCategory \Magento\Catalog\Model\Category */
+                    $productCategory = $this->fixtureModel->getObjectManager()->get('Magento\Catalog\Model\Category');
+
                     /** @var $simpleProductCollection \Magento\Catalog\Model\ResourceModel\Product\Collection */
                     $simpleProductCollection = $this->fixtureModel->getObjectManager()->create(
-                        \Magento\Catalog\Model\ResourceModel\Product\Collection::class
+                        'Magento\Catalog\Model\ResourceModel\Product\Collection'
                     );
 
                     $simpleProductCollection->addStoreFilter($storeId);
                     $simpleProductCollection->addWebsiteFilter($websiteId);
-                    $simpleProductCollection->addCategoriesFilter(['eq' => $resultsCategory]);
+                    $simpleProductCollection->addCategoryFilter($productCategory->load($resultsCategory));
                     $simpleProductCollection->getSelect()->where(" type_id = 'simple' ");
                     $simpleIds = $simpleProductCollection->getAllIds(2);
                     $simpleProductsResult = [];
@@ -314,7 +316,7 @@ class OrdersFixture extends Fixture
     public function getConnection()
     {
         return $this->fixtureModel->getObjectManager()->get(
-            \Magento\Framework\App\ResourceConnection::class
+            'Magento\Framework\App\ResourceConnection'
         )->getConnection();
     }
 }
